@@ -5,9 +5,12 @@ data/O3a_events/**/
 data/PE_skymaps/**
 scripts/**/*.h5
 scripts/**/*.pkl
-**/ipynb_checkpoints/**
+**/.ipynb_checkpoints/**
 **/*-checkpoint.py
 **/*.xml
 **/*.fits
 **/*.fits.gz
+**/*.pyc
+**/*-checkpoint*
 **/data/dataframes/**
+testing_package/**
