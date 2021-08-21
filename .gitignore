@@ -1,0 +1,13 @@
+data/qts/**
+data/bayestar_skymaps/**
+**/*.out
+data/O3a_events/**/
+data/PE_skymaps/**
+scripts/**/*.h5
+scripts/**/*.pkl
+**/ipynb_checkpoints/**
+**/*-checkpoint.py
+**/*.xml
+**/*.fits
+**/*.fits.gz
+**/data/dataframes/**
