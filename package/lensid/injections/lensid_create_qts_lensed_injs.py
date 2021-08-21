@@ -59,9 +59,12 @@ def main():
 
     if not os.path.exists(odir):
         os.makedirs(odir)
+    try:    
         os.makedirs(odir+'/H1')
         os.makedirs(odir+'/L1')
         os.makedirs(odir+'/V1')
+    except:
+        print(odir, ' already exists. saving Qtransforms to it.')
 
 
     ids=np.arange(data['m1'].shape[0])
