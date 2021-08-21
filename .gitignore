@@ -3,8 +3,8 @@ data/bayestar_skymaps/**
 **/*.out
 data/O3a_events/**/
 data/PE_skymaps/**
-scripts/**/*.h5
-scripts/**/*.pkl
+notebooks/**/*.h5
+notebooks/**/*.pkl
 **/.ipynb_checkpoints/**
 **/*-checkpoint.py
 **/*.xml
