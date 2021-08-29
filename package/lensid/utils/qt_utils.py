@@ -9,22 +9,23 @@ import pandas as pd
 import matplotlib.pylab as plt
 
 
-def inj_psds_HLV(psd_mode="analytical", asd_dir=None):
+def inj_psds_HLV(psd_mode="analytical", sample_rate= 2**12 asd_dir=None):
     """
     Generates power spectral densities for the H,L,V detectors.
 
     Parameters:
         psd_mode='analytical'(default, advanced Ligo, Virgo PSDs ) or 'load'.
         asd_dir = path to directory in which psd files exist. H1.txt, L1.txt,V1.txt
+        sample_rate(float) = sample rate of the signal. Default: 4096
     Returns:
         three numpy arrays: psd_H, psd_L, psd_V
 
     """
 
     if psd_mode == "analytical":
-        flow = 15.0
-        delta_f = 1.0 / 16
-        flen = int(2048 / delta_f) + 1
+        flow = 0.0
+        delta_f = 1.0 / 16        
+        flen = int(sample_rate / (2 * delta_f)) + 1
         psd_H = pycbc.psd.aLIGOZeroDetHighPower(flen, delta_f, flow)
         psd_L = pycbc.psd.aLIGOZeroDetHighPower(flen, delta_f, flow)
         psd_V = pycbc.psd.analytical.AdvVirgo(flen, delta_f, flow)
@@ -44,7 +45,7 @@ q_mlarge = (3, 7)
 q_wide = (3, 30)
 
 
-def inject_noise_signal(signal, psd, duration=128, whitened=False, seed=None):
+def inject_noise_signal_custom(signal, psd, duration=128, whitened=False, seed=None):
     """
     Adds gaussian noise to a given signal using a given PSD. Optionally whitens the signal.
 
@@ -61,33 +62,27 @@ def inject_noise_signal(signal, psd, duration=128, whitened=False, seed=None):
         seed(int): random seed for the noise realisation, default: None.
 
     Returns:
-        pycbc timeseries: noise_signal
+        pycbc timeseries: noise_signal of 8s.
 
     """
     delta_t = 1.0 / signal.sample_rate
-    if whitened == True:
-        if duration > signal.duration:
-            tsamples = int(duration / delta_t)
-        else:
-            tsamples = len(signal.sample_times)
+    tsamples = int(duration / delta_t)
 
-        ts = pycbc.noise.noise_from_psd(tsamples, delta_t, psd, seed=seed)
-        ts.start_time += signal.end_time - duration / 2
-        noise_signal = ts.add_into(signal)
+    ts = pycbc.noise.noise_from_psd(tsamples, delta_t, psd, seed=seed)
+    ts.start_time += signal.end_time - duration / 2
+    noise_signal = ts.add_into(signal)
+    if whitened == True:
+
         noise_signal_whitened = (
             noise_signal.whiten(4,4) * 1e-21
         )
-#        print(noise_signal_whitened.duration)
         return noise_signal_whitened.time_slice(
             signal.end_time - 6, signal.end_time + 2
         )
     else:
-        tsamples = len(signal.sample_times)
-        ts = pycbc.noise.noise_from_psd(tsamples, delta_t, psd, seed=seed)
-        ts.start_time += signal.start_time
-        noise_signal = ts + signal
-
-        return noise_signal
+        return noise_signal.time_slice(
+            signal.end_time - 6, signal.end_time + 2
+        )
 
 
 def plot_qt_from_ts(
