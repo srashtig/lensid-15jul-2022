@@ -8,10 +8,9 @@ import matplotlib.pylab as plt
 import pandas as pd
 
 
-# In[2]:
+base_dir = '/home/srashti.goyal/strong-lensing-ml/' #CIT
 
-
-O3a_events_df=pd.read_csv('../../data/O3a_events/O3a_blu.txt',delimiter='\t')
+O3a_events_df=pd.read_csv(base_dir+ 'data/O3a_events/O3a_blu.txt',delimiter='\t')
 
 
 # In[3]:
@@ -34,29 +33,28 @@ def read_pe_samples(fname,event_name):
 data_dir='/home/pe.o3/o3a_catalog/data_release/all_posterior_samples/'
 
 
-# In[5]:
-
-
-def make_sns_corner_plots_new_params(samples1,samples2,fname='test.png',inj_pars1=None,inj_pars2=None,kde=False):
+def make_sns_corner_plots_new_params(psamples1,psamples2,fname='test.png',inj_pars1=None,inj_pars2=None,kde=False):
     """Plot and save superposed KDE corner plots for the two images from posteriors."""
+    samples1=pd.DataFrame()
+    samples2=pd.DataFrame()
+    samples1['m1'],samples1['m2']=psamples1['mass_1'],psamples1['mass_2']
+    samples1['dec']=np.sin(psamples1['ra'])
     
-    samples1['m1'],samples1['m2']=samples1['mass_1'],samples1['mass_2']
-    samples1['dec']=np.sin(samples1['dec'])
-    
-    samples2['m1'],samples2['m2']=samples2['mass_1'],samples2['mass_2']
-    samples2['dec']=np.sin(samples2['dec'])
+    samples2['m1'],samples2['m2']=psamples2['mass_1'],psamples2['mass_2']
+    samples2['dec']=np.sin(psamples2['dec'])
 
     
-    samples1=pd.DataFrame(samples1)
-    samples2=pd.DataFrame(samples2)
+    keys = ['ra','theta_jn','psi','phase','geocent_time','luminosity_distance']
+    for key in keys:
+        samples1[key],samples2[key] = psamples1[key],psamples2[key]
     samples1['img']=np.zeros(len(samples1['m1'])).astype(str)
     samples2['img']=np.ones(len(samples2['m1'])).astype(str)
     posteriors=pd.concat([samples1,samples2])
     sns.set(font_scale=1.5)
-    posteriors=posteriors.rename(columns={"m1": "$m_1$", "m2": "$m_2$",'dec':'sin($\delta$)','ra':r'$\alpha$','theta_jn':'$\iota$','psi':'$\psi$','phase':'$\phi_0$','geocent_time': '$t_c$','luminosity_distance':'$d_L$'})
-    fig1 = sns.PairGrid(data= posteriors,vars = ['$m_1$','$m_2$',r'$\alpha$','sin($\delta$)','$\iota$','$\psi$','$\phi_0$','$d_L$','$t_c$'],height=1.5,corner=True,hue='img')
+    posteriors=posteriors.rename(columns={"m1": "$m_1$", "m2": "$m_2$",'dec':'sin($\delta$)','ra':'$\\alpha$','theta_jn':'$\iota$','psi':'$\psi$','phase':'$\phi_0$','geocent_time': '$t_c$','luminosity_distance':'$d_L$'})
+    fig1 = sns.PairGrid(data= posteriors,vars = ['$m_1$','$m_2$','$\\alpha$','sin($\delta$)','$\iota$','$\psi$','$\phi_0$','$d_L$','$t_c$'],height=1.5,corner=True,hue='img')
     if kde == True:
-        fig1 = sns.PairGrid(data= posteriors,vars = ['$m_1$','$m_2$',r'$\alpha$','sin($\delta$)','$\iota$','$\psi$','$\phi_0$','$d_L$','$t_c$'],height=1.5,hue='img')
+        fig1 = sns.PairGrid(data= posteriors,vars = ['$m_1$','$m_2$','$\\alpha$','sin($\delta$)','$\iota$','$\psi$','$\phi_0$','$d_L$','$t_c$'],height=1.5,hue='img')
         fig1 = fig1.map_lower(sns.kdeplot)#,shade=True,shade_lowest=False)
 
     fig1 = fig1.map_lower(sns.histplot,pthresh=0.1)
@@ -83,15 +81,6 @@ def make_sns_corner_plots_new_params(samples1,samples2,fname='test.png',inj_pars
     plt.savefig(fname)
     plt.close()
     print('Done: ' + fname)
-
-
-# In[1]:
-
-
-#!ls /home/pe.o3/o3a_catalog/data_release/all_posterior_samples/*_comoving.h5
-
-
-# In[2]:
 
 
 odir = 'corner_plots/'

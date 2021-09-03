@@ -7,7 +7,7 @@ notebooks/**/*.h5
 notebooks/**/*.pkl
 **/.ipynb_checkpoints/**
 **/*-checkpoint.py
-**/*.xml
+##**/*.xml
 **/*.fits
 **/*.fits.gz
 **/*.pyc

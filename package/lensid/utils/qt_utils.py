@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pylab as plt
 
 
-def inj_psds_HLV(psd_mode="analytical", sample_rate= 2**12 asd_dir=None):
+def inj_psds_HLV(psd_mode="analytical", sample_rate= 2**12, asd_dir=None):
     """
     Generates power spectral densities for the H,L,V detectors.
 
