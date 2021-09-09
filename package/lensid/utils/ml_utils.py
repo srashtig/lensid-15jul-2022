@@ -98,6 +98,24 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
     Returns:
         model(Keras model): trained on the input matrix and labels.
     """
+    
+    
+    '''
+    gpus = tf.config.list_physical_devices('GPU')
+    if gpus:
+      # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
+        try:
+            for gpu in gpus:
+                tf.config.set_logical_device_configuration(
+                    gpu,
+                    [tf.config.LogicalDeviceConfiguration(memory_limit=40*1024)])
+            logical_gpus = tf.config.list_logical_devices('GPU')
+            print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+        except RuntimeError as e:
+            # Virtual devices must be set before GPUs have been initialized
+            print(e)
+    '''
+    
     pre_model = tf.keras.applications.DenseNet201(
         input_shape=(128, 128, 3), weights="imagenet", include_top=False
     )
