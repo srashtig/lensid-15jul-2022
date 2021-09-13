@@ -1,118 +1,57 @@
-#!/usr/bin/env python
-# coding: utf-8
+import sys
+import argparse
+from lensid.utils.ml_utils import * 
 
-# In[1]:
+def main():
+    parser = argparse.ArgumentParser(description='This is stand alone code for training Densenets for H or L or V detector using the lensed and unlensed simulated events qtransforms')
+    parser.add_argument('-lensed_df','--lensed_df', help='input lensed Dataframe path',default='train/lensed.csv')
+    parser.add_argument('-unlensed_df','--unlensed_df', help='input unlensed Dataframe path',default='train/unlensed_half.csv')
+    parser.add_argument('-data_dir','--data_dir', help='QTs images folder path',required=True)
 
+    parser.add_argument('-whitened','--whitened',help='True/False',default = False)
+    parser.add_argument('-odir','--odir', help='output trained densenet models H1.h5, L1.h5, V1.h5 directory path ',required=True)
+    parser.add_argument('-det','--det',help='which detector(H1 or L1 or V1)',default='H1')
+    
+    
+    parser.add_argument('-size_lensed','--size_lensed',help = 'no. of lensed events to train on',type = int, default = 1400)
+    parser.add_argument('-size_unlensed','--size_unlensed',help = 'no. of unlensed events to train on',type = int, default = 1400)
+    parser.add_argument('-epochs','--epochs',help = 'no. of epochs to train for',type = int, default = 20)
+    parser.add_argument('-lr','--lr',help = 'initial learing rate for training',type = float, default = 0.01)
 
-#!export LD_LIBRARY_PATH="/usr/local/cuda-10.1/lib64"
-#!export CUDA_HOME=/usr/local/cuda-10.1
-from lensid.utils.ml_utils import *
+    args = parser.parse_args()
 
+    
+    data_dir =args.data_dir
 
-# In[17]:
+    odir=args.odir
 
+    if not os.path.exists(odir):
+            os.makedirs(odir)
 
-indir = 'train'
-
-#data_dir = '../../data/qts/'  #ALICE
-
-#df_dir='../../data/dataframes/train/' ##alice
-df_dir = '/home/srashti.goyal/strong-lensing-ml/data/dataframes/' #CIT
-
-data_dir = '/home/srashti.goyal/alice_data_lensid/qts/' + indir + '/' ##CIT
-
-odir='dense_out/cit/'
-
-if not os.path.exists(odir):
-        os.makedirs(odir)
-
-# # Load training dataframe
-
-# In[11]:
-
-
-df_lensed = pd.read_csv(df_dir+str(indir)+'/lensed.csv' )
-df_lensed=df_lensed.drop(columns=['Unnamed: 0'])
-df_lensed['img_0']=df_lensed['img_0'].values 
-df_lensed['img_1']=df_lensed['img_1'].values 
-df_lensed=df_lensed[:1400]
-df_unlensed = pd.read_csv(df_dir+str(indir)+'/unlensed_half.csv' )
-df_unlensed=df_unlensed.drop(columns=['Unnamed: 0'])
-df_unlensed = df_unlensed.sample(frac = 1,random_state = 42).reset_index(drop = True)[:1400]
-df_train = pd.concat([df_lensed,df_unlensed],ignore_index = True)
-df_train=df_train.sample(frac = 1).reset_index(drop = True)
-
-
-# In[12]:
-
-
-df_train.tail()
-
-
-# ## Load input feature matrix for Detector H1 from the Qtransforms
-# 
-
-# In[18]:
-
-
-det='H1'
-X , y,missing_ids, df_train =  generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True)
-
-
-# In[6]:
-
-
-df_train.tail()
-
-
-# dense_model_trained = train_densenet(X,y,det,20, 0.01) #20,0.01, .005
-# dense_model_trained.save(odir+'det+'.h5')## Train and save the Densenet model
-# 
-
-# In[7]:
-
-
-dense_model_trained = train_densenet(X,y,det,20, 0.01) #20,0.01, .005
-dense_model_trained.save(odir+det+'.h5')
-
-
-# # Det L1
-
-# In[8]:
-'''
-
-del X
-del y
-det='L1'
-X , y,missing_ids, df_train =  generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True)
-
-
-# In[9]:
-
-
-dense_model_trained = train_densenet(X,y,det,20, 0.01)  
-dense_model_trained.save(odir+det+'.h5')
-
-
-# # Det V1
-
-# In[10]:
-
-
-del X
-del y
-det='V1'
-X , y,missing_ids, df_train =  generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True)
-
-
-# In[11]:
-
-
-dense_model_trained = train_densenet(X,y,det,20, 0.01) #20,0.01, .005
-dense_model_trained.save(odir+det+'.h5')
+    # # Load training dataframe
 
 
 
+    df_lensed = pd.read_csv(args.lensed_df)
+    df_lensed=df_lensed.drop(columns=['Unnamed: 0'])
+    df_lensed['img_0']=df_lensed['img_0'].values 
+    df_lensed['img_1']=df_lensed['img_1'].values 
+    df_lensed=df_lensed[:args.size_lensed]
+    df_unlensed = pd.read_csv(args.unlensed_df)
+    df_unlensed=df_unlensed.drop(columns=['Unnamed: 0'])
+    df_unlensed = df_unlensed.sample(frac = 1,random_state = 42).reset_index(drop = True)[:args.size_unlensed]
+    df_train = pd.concat([df_lensed,df_unlensed],ignore_index = True)
+    df_train=df_train.sample(frac = 1).reset_index(drop = True)
 
 
-'''
+    det = args.det
+    X , y,missing_ids, df_train =  generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True)
+
+
+    dense_model_trained = train_densenet(X,y,det,args.epochs, args.lr) #20,0.01, .005
+    dense_model_trained.save(odir+det+'.h5')
+
+
+
+if __name__ == "__main__":
+    main()
