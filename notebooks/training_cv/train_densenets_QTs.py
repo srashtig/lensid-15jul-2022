@@ -1,5 +1,6 @@
 import sys
 import argparse
+
 from lensid.utils.ml_utils import * 
 
 def main():
@@ -50,7 +51,6 @@ def main():
 
     dense_model_trained = train_densenet(X,y,det,args.epochs, args.lr) #20,0.01, .005
     dense_model_trained.save(odir+det+'.h5')
-
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ data/O3a_events/**/
 data/PE_skymaps/**
 notebooks/**/*.h5
 notebooks/**/*.pkl
+**/out/**
+**/dense_out/**
 **/.ipynb_checkpoints/**
 **/*-checkpoint.py
 ##**/*.xml
