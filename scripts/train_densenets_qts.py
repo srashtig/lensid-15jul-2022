@@ -1,7 +1,10 @@
-import sys
+import lensid.utils.ml_utils as ml
+import pandas as pd
+import warnings
+import os
 import argparse
-
-from lensid.utils.ml_utils import * 
+import numpy as np
+warnings.filterwarnings('ignore')
 
 def main():
     parser = argparse.ArgumentParser(description='This is stand alone code for training Densenets for H or L or V detector using the lensed and unlensed simulated events qtransforms')
@@ -29,8 +32,10 @@ def main():
     if not os.path.exists(odir):
             os.makedirs(odir)
 
-    # # Load training dataframe
-
+    print('\n Arguments used:- \n')
+    
+    for arg in vars(args):
+        print(arg, ': \t', getattr(args, arg))
 
 
     df_lensed = pd.read_csv(args.lensed_df)
@@ -46,10 +51,10 @@ def main():
 
 
     det = args.det
-    X , y,missing_ids, df_train =  generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True)
+    X , y,missing_ids, df_train =  ml.generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True)
 
 
-    dense_model_trained = train_densenet(X,y,det,args.epochs, args.lr) #20,0.01, .005
+    dense_model_trained = ml.train_densenet(X,y,det,args.epochs, args.lr) #20,0.01, .005
     dense_model_trained.save(odir+det+'.h5')
 
 
