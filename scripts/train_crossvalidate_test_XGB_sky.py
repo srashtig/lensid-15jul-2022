@@ -42,7 +42,8 @@ def main():
     blu_lensed = args.path_to_blu + 'Lensed_PE_blus.csv'
     blu_unlensed = args.path_to_blu  + 'Unlensed_PE_blus.csv'
     tag=args.tag
-
+    if tag == 'None':
+        tag=''
     print('\n Training...\n')
     df_lensed_sky = pd.read_csv(df_dir_train+'lensed_sky'+tag+'.csv',index_col=[0] )[:args.train_size_lensed]
     df_unlensed_sky_half = pd.read_csv(df_dir_train+'unlensed_half_sky'+tag+'.csv' ,index_col=[0])

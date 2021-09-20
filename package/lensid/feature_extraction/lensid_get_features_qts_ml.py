@@ -1,7 +1,7 @@
 import sys
 import argparse
-from lensid.utils.ml_utils import * 
-
+import lensid.utils.ml_utils as ml
+import pandas as pd
 def main():
     parser = argparse.ArgumentParser(description='This is stand alone code for calculating 3-det QTs features using trained densenets and QTs, for given even pairs')
     parser.add_argument('-infile','--infile', help='input Dataframe path',default='train/lensed.csv')
@@ -18,12 +18,12 @@ def main():
 
     print(args.dense_models_dir)
 
-    data_dir = args.data_dir+'/'
+    data_dir = args.data_dir
 
 
-    dense_model_H1=load_model(args.dense_models_dir + 'H1.h5')
-    dense_model_L1=load_model(args.dense_models_dir + 'L1.h5')
-    dense_model_V1=load_model(args.dense_models_dir + 'V1.h5')
+    dense_model_H1=ml.load_model(args.dense_models_dir + 'H1.h5')
+    dense_model_L1=ml.load_model(args.dense_models_dir + 'L1.h5')
+    dense_model_V1=ml.load_model(args.dense_models_dir + 'V1.h5')
     if args.n ==0:
         df = pd.read_csv(args.infile, index_col=[0])[args.start:]
         print(len(df['img_0']), ' event pairs ')
@@ -41,11 +41,11 @@ def main():
         for i in range(0,l,dl):
             if i + dl < l:
                 print(i)
-                X , y,missing_ids, df[i:i+dl] =  generate_resize_densenet_fm(df[i:i+dl]).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True,whitened=args.whitened)
-                df['dense_'+det+'_'+str(args.model_id)].values[i:i+dl] = Dense_predict(model,df[i:i+dl],X,missing_ids)[:,0]
+                X , y,missing_ids, df[i:i+dl] =  ml.generate_resize_densenet_fm(df[i:i+dl]).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True,whitened=args.whitened)
+                df['dense_'+det+'_'+str(args.model_id)].values[i:i+dl] = ml.Dense_predict(model,df[i:i+dl],X,missing_ids)[:,0]
             else:
-                X , y,missing_ids, df[i:l] = generate_resize_densenet_fm(df[i:l]).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True,whitened=args.whitened)
-                df['dense_'+det+'_'+str(args.model_id)].values[i:l]= Dense_predict(model,df[i:l],X,missing_ids)[:,0]
+                X , y,missing_ids, df[i:l] = ml.generate_resize_densenet_fm(df[i:l]).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True,whitened=args.whitened)
+                df['dense_'+det+'_'+str(args.model_id)].values[i:l]= ml.Dense_predict(model,df[i:l],X,missing_ids)[:,0]
     print(df.tail())
     df.to_csv(args.outfile)
 

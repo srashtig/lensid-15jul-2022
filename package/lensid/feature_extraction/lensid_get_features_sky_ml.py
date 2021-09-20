@@ -1,7 +1,8 @@
 import sys
-from  lensid.utils.ml_utils import * 
+import lensid.utils.ml_utils as ml 
 import argparse
-#nohup python skymaps_ML.py -infile train/lensed.csv -data_dir train -outfile train/lensed_sky.csv >b.out &
+import pandas as pd
+
 def main():
     parser = argparse.ArgumentParser(description='This is stand alone code for calculating features from the skymaps pairs(.npz)')
     parser.add_argument('-infile','--infile', help='input Dataframe path',default='train/lensed.csv')
@@ -42,10 +43,10 @@ def main():
     for i in range(0,l,dl):
         if i + dl < l:
             print(i)
-            features ,xgb_sky_labels,df[i:i+dl],missing_ids = generate_skymaps_fm(df[i:i+dl]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb,data_dir=data_dir) 
+            features ,xgb_sky_labels,df[i:i+dl],missing_ids = ml.generate_skymaps_fm(df[i:i+dl]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb,data_dir=data_dir) 
 
         else:
-            features ,xgb_sky_labels,df[i:l],missing_ids = generate_skymaps_fm(df[i:l]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb,data_dir=data_dir) 
+            features ,xgb_sky_labels,df[i:l],missing_ids = ml.generate_skymaps_fm(df[i:l]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb,data_dir=data_dir) 
 
     print(df.tail())
     df.to_csv(args.outfile)

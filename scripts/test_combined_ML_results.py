@@ -24,7 +24,11 @@ def main():
         print(arg, ': \t', getattr(args, arg))
     
     tag_sky=args.tag_sky
+    if tag_sky == 'None':
+        tag_sky=''
     tag_qts=args.tag_qts
+    if tag_qts == 'None':
+        tag_qts=''
     odir = args.odir
     df_sky = pd.read_csv(args.indir+'/ML_sky'+tag_sky+'.csv').drop(columns=['Unnamed: 0'])
     df_qts = pd.read_csv(args.indir+'/ML_qts'+tag_qts+'.csv').drop(columns=['Unnamed: 0'])

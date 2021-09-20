@@ -1,0 +1,64 @@
+#[DEFAULT]
+work_dir : /home/srashti.goyal/lensid_runs
+train_densenets : True
+calc_features_sky : False
+cal_features_qts : True
+train_test_qts : True
+train_test_sky : True
+test_combined_ml : True
+compare_to_blu : True
+dense_model_dir : /home/srashti.goyal/lensid/saved_models/
+df_dir_train : /home/srashti.goyal/strong-lensing-ml/data/dataframes/train/
+df_dir_test : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test/
+
+#df_dir_train_features : /home/srashti.goyal/strong-lensing-ml/data/dataframes/train/
+#df_dir_test_features : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test/
+
+df_dir_train_features : /home/srashti.goyal/lensid_runs/dataframes/train/
+df_dir_test_features : /home/srashti.goyal/lensid_runs/dataframes/test/
+
+
+path_to_blu : /home/srashti.goyal/strong-lensing-ml/data/dataframes/haris_et_al/
+data_dir_qts_train : /home/srashti.goyal/alice_data_lensid/qts/train/
+data_dir_qts_test : /home/srashti.goyal/alice_data_lensid/qts/test/
+data_dir_sky_train : /home/srashti.goyal/alice_data_lensid/bayestar_skymaps/train
+data_dir_sky_test : /home/srashti.goyal/alice_data_lensid/bayestar_skymaps/test
+whitened : False
+tag_qts : '' #_kaggle
+tag_sky : ''
+
+#[train-densenets]
+epochs : 20
+lensed_df : lensed.csv
+unlensed_df : unlensed_half.csv
+train_h1 : True
+train_l1 : True
+train_v1 : True
+h1_lr : 0.01
+l1_lr : 0.01 
+v1_lr : 0.01 
+size_lensed : 1400
+size_unlensed : 1400
+include_phenom : True
+
+#[train-test-cv-qts]
+train_size_lensed_xgbqts : 2400
+cv_size_lensed_xgbqts : 2400
+cv_splits_xgbqts : 10
+scale_pos_weight_xgbqts : 0.01
+max_depth_xgbqts : 6
+n_estimators_xgbqts : 135
+
+
+#[train-test-cv-sky]
+train_size_lensed_xgbsky : 2400
+cv_size_lensed_xgbsky : 2400
+cv_splits_xgbsky : 10
+scale_pos_weight_xgbsky : 0.01
+max_depth_xgbsky : 6
+n_estimators_xgbsky : 110
+
+#[test-ml-combined]
+indir_df : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test 
+
+#python train_densenets_QTs.py -lensed_df ~/strong-lensing-ml/data/dataframes/train/lensed.csv -unlensed_df ~/strong-lensing-ml/data/dataframes/train/unlensed_half.csv -odir dense_out/cit/ -epochs 10 -data_dir ~/alice_data_lensid/qts/train/

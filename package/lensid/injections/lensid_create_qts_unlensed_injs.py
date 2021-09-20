@@ -8,7 +8,7 @@ import os
 import numpy as np
 import pandas as pd
 import sys
-from lensid.utils.qt_utils import *
+import lensid.utils.qt_utils as qtils
 import argparse
 def main():
     parser = argparse.ArgumentParser(description='This is stand alone code for generating QTs for unlensed injection dataset')
@@ -27,11 +27,11 @@ def main():
 
     if args.psd_mode ==1:
         psd_mode = 'analytical'
-        psd_H, psd_L, psd_V = inj_psds_HLV(psd_mode=psd_mode)
+        psd_H, psd_L, psd_V = qtils.inj_psds_HLV(psd_mode=psd_mode)
 
     elif args.psd_mode==2:
         psd_mode='load'
-        psd_H, psd_L, psd_V = inj_psds_HLV(psd_mode=psd_mode,asd_dir=args.asd_dir)
+        psd_H, psd_L, psd_V = qtils.inj_psds_HLV(psd_mode=psd_mode,asd_dir=args.asd_dir)
     else: 
         print('invalid psd_mode choice')
     duration=64
@@ -69,11 +69,11 @@ def main():
     for count,i in enumerate(range(args.start,args.start+args.n)):
         if args.qrange == 1:
             if data["m1z"][i]<60:
-                q = q_msmall
+                q = qtils.q_msmall
             else:
-                q = q_mlarge
+                q = qtils.q_mlarge
         else:
-            q=q_wide
+            q=qtils.q_wide
         hp,hc = get_td_waveform(approximant = "IMRPhenomPv2",mass1=data["m1z"][i],mass2=data['m2z'][i],inclination=data["iota"][i],delta_t=1.0/2**12,f_lower=15,f_higher = 1000, distance =data["ldistance"][i],coa_phase = data['phi0'][i])
         # flower=30 works without whitening
         print(data["m1z"][i],data['m2z'][i])
@@ -90,16 +90,16 @@ def main():
         signal_l1 = det_l1.project_wave(hp,hc,right_ascension,declination,polarization)
         signal_v1 = det_v1.project_wave(hp,hc,right_ascension,declination,polarization)
 
-        noise_signal_h1 = inject_noise_signal(signal_h1, psd_H, duration=duration,whitened=whitened)
-        noise_signal_l1 = inject_noise_signal(signal_l1, psd_L, duration=duration,whitened=whitened)
-        noise_signal_v1 = inject_noise_signal(signal_v1, psd_V, duration=duration,whitened=whitened)
+        noise_signal_h1 = qtils.inject_noise_signal(signal_h1, psd_H, duration=duration,whitened=whitened)
+        noise_signal_l1 = qtils.inject_noise_signal(signal_l1, psd_L, duration=duration,whitened=whitened)
+        noise_signal_v1 = qtils.inject_noise_signal(signal_v1, psd_V, duration=duration,whitened=whitened)
 
         fname=str(data['event_tag'][i])
         if whitened== True:
             fname=fname+'-whitened'
-        pow_H1[count]=plot_qt_from_ts(noise_signal_h1, data["tc"][i], q, outfname=odir+ "/H1/"+fname)
-        pow_L1[count]=plot_qt_from_ts(noise_signal_l1, data["tc"][i], q, outfname=odir+ "/L1/"+fname)
-        pow_V1[count]=plot_qt_from_ts(noise_signal_v1, data["tc"][i], q, outfname=odir+ "/V1/"+fname)
+        pow_H1[count]=qtils.plot_qt_from_ts(noise_signal_h1, data["tc"][i], q, outfname=odir+ "/H1/"+fname)
+        pow_L1[count]=qtils.plot_qt_from_ts(noise_signal_l1, data["tc"][i], q, outfname=odir+ "/L1/"+fname)
+        pow_V1[count]=qtils.plot_qt_from_ts(noise_signal_v1, data["tc"][i], q, outfname=odir+ "/V1/"+fname)
         fnames[count] = fname
 
 
