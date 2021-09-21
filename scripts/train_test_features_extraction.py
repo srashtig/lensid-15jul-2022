@@ -44,30 +44,27 @@ def main():
         for key, value in doc.items():
             print(key + " : " + str(value))
             set_var(key,value)
-    if tag_sky == '':
-        tag_sky_in = 'None'
-    else:
-        tag_sky_in = tag_sky
-        
-    if tag_qts == '':
-        tag_qts_in = 'None'
-    else:
-        tag_qts_in = tag_qts
-    train_dfs = ['lensed','unlensed_half','unlensed_second_half']
-    test_dfs = ['lensed','unlensed']
+    if not os.path.exists(base_out_dir+df_dir_test_features_out):
+            os.makedirs(base_out_dir+df_dir_test_features_out)
+    if not os.path.exists(base_out_dir+df_dir_train_features_out):
+            os.makedirs(base_out_dir+df_dir_train_features_out)
     if calc_features_sky ==True:
         print('Calculating Sky features...') 
-        for df in train_dfs :
-            os.system('nohup lensid_get_features_sky_ml -infile %s -outfile %s -data_dir %s >%s.out &'%(df_dir_train+df+'.csv',(df_dir_train_features+df+'_sky'+tag_sky+'.csv'),data_dir_sky_train,'train_'+df+'_sky'+tag_sky))
-        for df in test_dfs :
-            os.system('nohup lensid_get_features_sky_ml -infile %s -outfile %s -data_dir %s >%s.out &'%(df_dir_test+df+'.csv',(df_dir_test_features+df+'_sky'+tag_sky+'.csv'),data_dir_sky_test,'test_'+df+'_sky'+tag_sky))
+        for df in train_dfs_dict.keys() :
+            print('train ', df)
+            os.system('nohup lensid_get_features_sky_ml -infile %s -outfile %s -data_dir %s  -n %d >%s.out &'%(df_dir_train+df+'.csv',(base_out_dir+df_dir_train_features_out+df+'_sky'+tag_sky_out+'.csv'),data_dir_sky_train, train_dfs_dict[df],base_out_dir+'/train_'+df+'_sky'+tag_sky_out))
+        for df in test_dfs_dict.keys() :
+            print('test ', df)
+            os.system('nohup lensid_get_features_sky_ml -infile %s -outfile %s -data_dir %s -n %d >%s.out &'%(df_dir_test+df+'.csv',(base_out_dir+df_dir_test_features_out+df+'_sky'+tag_sky_out+'.csv'),data_dir_sky_test ,test_dfs_dict[df],base_out_dir+'/test_'+df+'_sky'+tag_sky_out))
 
     if cal_features_qts == True:
         print('Calculating Qtransform features...') 
-        for df in train_dfs :
-            os.system('nohup lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %s >%s.out &'%(df_dir_train+df + '.csv',(df_dir_train_features+df+'_qts'+tag_qts+'.csv'),data_dir_qts_train, dense_model_dir, whitened, work_dir+'/train_'+df+'_qts'+tag_qts))
-        for df in test_dfs :
-            os.system('nohup lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %s >%s.out &'%(df_dir_test+df + '.csv',(df_dir_test_features+df+'_qts'+tag_qts+'.csv'),data_dir_qts_test, dense_model_dir, whitened, work_dir+'/test_'+df+'_qts'+tag_qts))
+        for df in train_dfs_dict.keys() :
+            print('train ', df)
+            os.system('nohup lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %s -n %d >%s.out &'%(df_dir_train+df + '.csv',(base_out_dir+df_dir_train_features_out+df+'_qts'+tag_qts_out+'.csv'),data_dir_qts_train, dense_model_dir_in, whitened,train_dfs_dict[df], base_out_dir+'/train_'+df+'_qts'+tag_qts_out ))
+        for df in test_dfs_dict.keys() :
+            print('test ', df)
+            os.system('nohup lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %s -n %d >%s.out &'%(df_dir_test+df + '.csv',(base_out_dir+df_dir_test_features_out+df+'_qts'+tag_qts_out+'.csv'),data_dir_qts_test, dense_model_dir_in, whitened, test_dfs_dict[df], base_out_dir+'/test_'+df+'_qts'+tag_qts_out))
     
 if __name__ == "__main__":
     main()

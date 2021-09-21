@@ -50,11 +50,11 @@ def main():
         print('\n ##   Training Densenets ...  ## \n')
 
         if train_h1 == True:
-            os.system('python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %s -size_lensed %d -size_unlensed %d -lr %f -det H1'%(df_dir_train+lensed_df,df_dir_train+unlensed_df, dense_model_dir, epochs,data_dir_qts_train, whitened, size_lensed, size_unlensed, h1_lr ))
+            os.system('python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %s -size_lensed %d -size_unlensed %d -lr %f -det H1'%(df_dir_train+lensed_df,df_dir_train+unlensed_df, base_out_dir+dense_model_dir_out, epochs,data_dir_qts_train, whitened, size_lensed, size_unlensed, h1_lr ))
         if train_l1 == True:
-            os.system('python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %s -size_lensed %d -size_unlensed %d -lr %f -det L1'%(df_dir_train+lensed_df,df_dir_train+unlensed_df, dense_model_dir, epochs,data_dir_qts_train, whitened, size_lensed, size_unlensed, l1_lr ))
+            os.system('python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %s -size_lensed %d -size_unlensed %d -lr %f -det L1'%(df_dir_train+lensed_df,df_dir_train+unlensed_df, base_out_dir+dense_model_dir_out, epochs,data_dir_qts_train, whitened, size_lensed, size_unlensed, l1_lr ))
         if train_v1 == True:
-            os.system('python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %s -size_lensed %d -size_unlensed %d -lr %f -det V1'%(df_dir_train+lensed_df,df_dir_train+unlensed_df, dense_model_dir, epochs,data_dir_qts_train, whitened, size_lensed, size_unlensed, v1_lr ))
+            os.system('python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %s -size_lensed %d -size_unlensed %d -lr %f -det V1'%(df_dir_train+lensed_df,df_dir_train+unlensed_df, base_out_dir+dense_model_dir_out, epochs,data_dir_qts_train, whitened, size_lensed, size_unlensed, v1_lr ))
             
 if __name__ == "__main__":
     main()

@@ -15,7 +15,12 @@ def main():
 
     parser.add_argument('-model_id','--model_id', help='model id to include in output DF columns',default=0)
     args = parser.parse_args()
+    print('\n Arguments used:- \n')
+    
+    for arg in vars(args):
+        print(arg, ': \t', getattr(args, arg))
 
+        
     print(args.dense_models_dir)
 
     data_dir = args.data_dir

@@ -15,6 +15,10 @@ def main():
 
     parser.add_argument('-pe_skymaps','--pe_skymaps',help='use PE skymaps True/False',default=False)
     args = parser.parse_args()
+    print('\n Arguments used:- \n')
+    
+    for arg in vars(args):
+        print(arg, ': \t', getattr(args, arg))
 
     data_dir = args.data_dir+'/'
 

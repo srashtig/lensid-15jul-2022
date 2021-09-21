@@ -15,6 +15,12 @@ def main():
     parser.add_argument('-infile','--infile', help='.npz lensed injs file path to load tags from',required = True)
 
     args = parser.parse_args()
+    print('\n Arguments used:- \n')
+    
+    for arg in vars(args):
+        print(arg, ': \t', getattr(args, arg))
+
+        
     data=np.load(args.infile)
 
     if args.mode == 1:

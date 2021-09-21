@@ -12,6 +12,11 @@ def main():
     parser.add_argument('-n','--n', type=int, help='no. of unlensed injs',default = 0)
     parser.add_argument('-infile','--infile', help='input unlensed inj file path to load tags from',required = True)
     args = parser.parse_args()
+    print('\n Arguments used:- \n')
+    
+    for arg in vars(args):
+        print(arg, ': \t', getattr(args, arg))
+
     data=np.load(args.infile)
 
     ntot=data['m1z'].shape[0]

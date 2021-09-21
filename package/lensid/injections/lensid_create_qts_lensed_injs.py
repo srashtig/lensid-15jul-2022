@@ -25,6 +25,10 @@ def main():
     parser.add_argument('-asd_dir','--asd_dir',help='optional,give directory where psd files are in format H1.txt, L1.txt, V1.txt',default=None)
     parser.add_argument('-qrange', '--qrange',type = int, help= '1. default is 3,7 for m1>60 and 4,10 otherwise. 2. wide is 3,30', default = 1)
     args = parser.parse_args()
+    print('\n Arguments used:- \n')
+    
+    for arg in vars(args):
+        print(arg, ': \t', getattr(args, arg))
 
     if args.psd_mode ==1:
         psd_mode = 'analytical'
