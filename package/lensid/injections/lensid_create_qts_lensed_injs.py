@@ -17,7 +17,7 @@ def main():
     parser.add_argument('-odir','--odir', help='Output directory',default='check')
 
     parser.add_argument('-start','--start', type=int, help='lensed inj start index',default=0)
-    parser.add_argument('-whitened','--whitened',help='True/False',type=bool,default = False)
+    parser.add_argument('-whitened','--whitened',help='1/0', type = int, default = 0)
     parser.add_argument('-n','--n', type=int, help='no. of unlensed injs',default = 0)
     parser.add_argument('-mode','--mode', type = int, help='enter no : 1. default \t 2. test',default = 1)
     parser.add_argument('-infile','--infile', help='.npz lensed injs file path to load tags from',required = True)
@@ -110,7 +110,7 @@ def main():
             noise_signal_v1 = qtils.inject_noise_signal(signal_v1, psd_V, duration=duration,whitened=whitened)
 
             fname=str(data['event_tag'][i])+'_'+str(data['img_tag'][i,j])
-            if whitened== True:
+            if whitened== 1:
                 fname=fname+'-whitened'
             pow_H1[count,j]=qtils.plot_qt_from_ts(noise_signal_h1, data["t0"][i][j], q, outfname=odir+ "/H1/"+fname)
             pow_L1[count,j]=qtils.plot_qt_from_ts(noise_signal_l1, data["t0"][i][j], q, outfname=odir+ "/L1/"+fname)
@@ -119,6 +119,6 @@ def main():
 
         print(i)
     fname = odir+'/qt_power_lensed'
-    if whitened== True:
+    if whitened== 1:
         fname=fname+'-whitened'
     np.savez(fname+'.npz',pow_H1=pow_H1,pow_L1=pow_L1,pow_V1=pow_V1,fnames=fnames)

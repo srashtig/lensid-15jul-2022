@@ -40,15 +40,13 @@ def main():
     if not os.path.exists(odir+'/dataframes'):
             os.makedirs(odir+'/dataframes')
 
-    if calc_features_sky ==True:
+    if calc_features_sky ==1:
         print('Calculating Sky features...')        
         os.system('lensid_get_features_sky_ml -infile %s -outfile %s -data_dir %s'%(in_df,(odir+'/dataframes/ML_sky'+tag_sky+'.csv'),data_dir_sky))
 
-    if cal_features_qts == True:
+    if cal_features_qts == 1:
         print('Calculating Qtransform features...')        
-        os.system('lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %s'%(in_df,(odir+'/dataframes/ML_qts'+tag_qts+'.csv'),data_dir_qts,dense_model_dir,whitened))
-
-
+        os.system('lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d'%(in_df,(odir+'/dataframes/ML_qts'+tag_qts+'.csv'),data_dir_qts,dense_model_dir,whitened))
 
     print('Calculating QTs ML predictions...')        
     xgb_qts = joblib.load(xgboost_qt)
@@ -93,7 +91,7 @@ def main():
     plt.show()    
 
 
-    if calc_fpp == True:
+    if calc_fpp == 1:
         print('Calculating False Positive Probabilities...')
         df_injs = pd.read_csv(background_df)
         for stat in fpp_dict.keys():

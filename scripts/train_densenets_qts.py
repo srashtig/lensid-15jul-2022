@@ -12,8 +12,8 @@ def main():
     parser.add_argument('-unlensed_df','--unlensed_df', help='input unlensed Dataframe path',default='train/unlensed_half.csv')
     parser.add_argument('-data_dir','--data_dir', help='QTs images folder path',required=True)
 
-    parser.add_argument('-whitened','--whitened',help='True/False',default = False)
-    parser.add_argument('-odir','--odir', help='output trained densenet models H1.h5, L1.h5, V1.h5 directory path ',required=True)
+    parser.add_argument('-whitened','--whitened',help='1/0',default = 0)
+    parser.add_argument('-odir','--odir', help='output trained densenet models H1.h5, L1.h5, V1.h5 directory path ',required=1)
     parser.add_argument('-det','--det',help='which detector(H1 or L1 or V1)',default='H1')
     
     
@@ -51,7 +51,7 @@ def main():
 
 
     det = args.det
-    X , y,missing_ids, df_train =  ml.generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=True)
+    X , y,missing_ids, df_train =  ml.generate_resize_densenet_fm(df_train).DenseNet_input_matrix(det = det,data_mode_dense="current",data_dir=data_dir,phenom=1)
 
 
     dense_model_trained = ml.train_densenet(X,y,det,args.epochs, args.lr) #20,0.01, .005

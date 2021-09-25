@@ -1,29 +1,29 @@
 #[DEFAULT]
 base_out_dir : /home/srashti.goyal/lensid_runs
-train_densenets : True
-calc_features_sky : False
-cal_features_qts : True
-train_test_qts : True
-train_test_sky : True
-test_combined_ml : True
-compare_to_blu : True
+train_densenets : 1
+calc_features_sky : 0
+cal_features_qts : 1
+train_test_qts : 1
+train_test_sky : 1
+test_combined_ml : 1
+compare_to_blu : 1
 df_dir_train : /home/srashti.goyal/strong-lensing-ml/data/dataframes/train/
 df_dir_test : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test/
-whitened : False
+whitened : 0
 
 #[train-densenets]
 epochs : 10
 lensed_df : lensed.csv
 unlensed_df : unlensed_half.csv
-train_h1 : True
-train_l1 : True
-train_v1 : True
+train_h1 : 1
+train_l1 : 1
+train_v1 : 1
 h1_lr : 0.01
 l1_lr : 0.01 
 v1_lr : 0.01 
 size_lensed : 1400
 size_unlensed : 1400
-include_phenom : True
+include_phenom : 1
 dense_model_dir_out : /saved_models/ #relative to base_out_dir
 
 #[feature-extraction]
@@ -36,9 +36,9 @@ data_dir_sky_train : /home/srashti.goyal/alice_data_lensid/bayestar_skymaps/trai
 data_dir_sky_test : /home/srashti.goyal/alice_data_lensid/bayestar_skymaps/test
 tag_qts_out : '' #_kaggle
 tag_sky_out : ''
-train_dfs_dict : { lensed : 1000 , unlensed_half : 1000 , unlensed_second_half : 1000}
+train_dfs_dict : { lensed : 100 , unlensed_half : 100 , unlensed_second_half : 100}
 #train_dfs_dict : { lensed : -1 , unlensed_half : -1 , unlensed_second_half : -1}
-test_dfs_dict : {lensed : 10 , unlensed : 1000}
+test_dfs_dict : {lensed : 100 , unlensed : 100}
 #test_dfs_dict : {lensed : -1 , unlensed : -1}
     
 #[train-test-cv-qts]

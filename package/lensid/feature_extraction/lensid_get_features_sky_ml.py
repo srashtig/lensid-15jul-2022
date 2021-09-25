@@ -13,7 +13,7 @@ def main():
 
     parser.add_argument('-n','--n', type=int, help='no. of  pairs',default=0)
 
-    parser.add_argument('-pe_skymaps','--pe_skymaps',help='use PE skymaps True/False',default=False)
+    parser.add_argument('-pe_skymaps','--pe_skymaps',help='use PE skymaps 1/0', type = int,default=0)
     args = parser.parse_args()
     print('\n Arguments used:- \n')
     
@@ -31,7 +31,7 @@ def main():
     dl=1000
     l=len(df.img_0.values)
 
-    if args.pe_skymaps==False:
+    if args.pe_skymaps==0:
         data_mode_xgb = 'current'
         df['bayestar_skymaps_blu']=''
         df['bayestar_skymaps_d2']=''

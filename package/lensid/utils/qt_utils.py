@@ -21,11 +21,11 @@ def inj_psds_HLV(psd_mode="analytical", sample_rate= 2**12, asd_dir=None):
         three numpy arrays: psd_H, psd_L, psd_V
 
     """
-
+    flow = 10.0
+    delta_f = 1.0 / 16        
+    flen = int(sample_rate / (2 * delta_f)) + 1
     if psd_mode == "analytical":
-        flow = 0.0
-        delta_f = 1.0 / 16        
-        flen = int(sample_rate / (2 * delta_f)) + 1
+        
         psd_H = pycbc.psd.aLIGOZeroDetHighPower(flen, delta_f, flow)
         psd_L = pycbc.psd.aLIGOZeroDetHighPower(flen, delta_f, flow)
         psd_V = pycbc.psd.analytical.AdvVirgo(flen, delta_f, flow)
@@ -34,9 +34,12 @@ def inj_psds_HLV(psd_mode="analytical", sample_rate= 2**12, asd_dir=None):
         filename_H = asd_dir+"/H1.txt"
         filename_L = asd_dir+"/L1.txt"
         filename_V = asd_dir+"/V1.txt"
-        psd_H = pycbc.types.load_frequencyseries(filename_H) ** 2
-        psd_L = pycbc.types.load_frequencyseries(filename_L) ** 2
-        psd_V = pycbc.types.load_frequencyseries(filename_V) ** 2
+        psd_H = pycbc.psd.from_txt(filename_H, flen, delta_f,
+                         flow, is_asd_file=1)
+        psd_L = pycbc.psd.from_txt(filename_L, flen, delta_f,
+                         flow, is_asd_file=1)
+        psd_V = pycbc.psd.from_txt(filename_V, flen, delta_f,
+                         flow, is_asd_file=1)
     return psd_H, psd_L, psd_V
 
 
@@ -45,7 +48,7 @@ q_mlarge = (3, 7)
 q_wide = (3, 30)
 
 
-def inject_noise_signal_custom(signal, psd, duration=128, whitened=False, seed=None):
+def inject_noise_signal(signal, psd, duration=128, whitened=0, seed=None):
     """
     Adds gaussian noise to a given signal using a given PSD. Optionally whitens the signal.
 
@@ -56,8 +59,8 @@ def inject_noise_signal_custom(signal, psd, duration=128, whitened=False, seed=N
         psd: powers spectral density to generate noise realisation from.
         
         duration(int): duration of the output noise signal, only if
-            whitened = True, default =128s.
-        whitened(bool): whiten the signal True/False(default).
+            whitened = 1, default =128s.
+        whitened(bool): whiten the signal 1/0(default).
         
         seed(int): random seed for the noise realisation, default: None.
 
@@ -71,10 +74,10 @@ def inject_noise_signal_custom(signal, psd, duration=128, whitened=False, seed=N
     ts = pycbc.noise.noise_from_psd(tsamples, delta_t, psd, seed=seed)
     ts.start_time += signal.end_time - duration / 2
     noise_signal = ts.add_into(signal)
-    if whitened == True:
+    if whitened == 1:
 
         noise_signal_whitened = (
-            noise_signal.whiten(4,4) * 1e-21
+            noise_signal.whiten(4,4,low_frequency_cutoff = 10) * 1e-21
         )
         return noise_signal_whitened.time_slice(
             signal.end_time - 6, signal.end_time + 2
@@ -86,7 +89,7 @@ def inject_noise_signal_custom(signal, psd, duration=128, whitened=False, seed=N
 
 
 def plot_qt_from_ts(
-    noise_signal, t_gps, qrange, outfname="test", save=True, fhigh=1000,normalised = True
+    noise_signal, t_gps, qrange, outfname="test", save=1, fhigh=1000,normalised = 1
 ):
 
     """
@@ -106,7 +109,7 @@ def plot_qt_from_ts(
         
         fhigh(int): High frequency cut for the Qtransform plot.
         
-        normalised: Divide power in each pixel by maximum power. Default : True
+        normalised: Divide power in each pixel by maximum power. Default : 1
 
     Returns:
         float: maximum power in the Qtransform in the window 
@@ -122,7 +125,7 @@ def plot_qt_from_ts(
     )
 
     pylab.figure(figsize=[7, 4])
-    if normalised == True: 
+    if normalised == 1: 
         pylab.pcolormesh(
             times[st:end],
             freqs,
@@ -138,7 +141,7 @@ def plot_qt_from_ts(
         )  
     pylab.xlim(t_gps - 0.2, t_gps + 0.1)
     pylab.yscale("log", basey=2)
-    if save == True:
+    if save == 1:
         pylab.axis("off")
         pylab.margins(0, 0)
         pylab.gca().xaxis.set_major_locator(pylab.NullLocator())

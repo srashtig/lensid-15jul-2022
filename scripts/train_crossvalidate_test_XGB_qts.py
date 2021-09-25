@@ -16,7 +16,7 @@ def main():
     parser.add_argument('-odir','--odir', help='Output directory to save models dataframes and plots',default='out')
     parser.add_argument('-tag','--tag', help='Tag for the dataframes',default='_kaggle')
     
-    parser.add_argument('-compare_to_blu','--compare_to_blu', help='Compare the results with blu? True/False',type=bool,default=True)
+    parser.add_argument('-compare_to_blu','--compare_to_blu',type=int, help='Compare the results with blu? 1/0',default=1)
     parser.add_argument('-path_to_blu','--path_to_blu',help = 'help path to haris et al blu directory',default = '/home/srashti.goyal/strong-lensing-ml/data/dataframes/haris_et_al/' )
     parser.add_argument('-train_size_lensed','--train_size_lensed',type=int,help='no. of lensed pairs to train on',default=2400)
     parser.add_argument('-cv_size_lensed','--cv_size_lensed',type=int,help='no. of lensed pairs to crossvalidate on',default=2400)
@@ -47,10 +47,10 @@ def main():
     print('\n Training...\n')
     df_lensed_qts = pd.read_csv(df_dir_train+'lensed_QTs'+tag+'.csv',index_col=[0] )[:args.train_size_lensed]
     df_unlensed_qts_half = pd.read_csv(df_dir_train+'unlensed_half_QTs'+tag+'.csv' ,index_col=[0])
-    df_unlensed_qts_half = df_unlensed_qts_half.sample(frac = 1,random_state = 42).reset_index(drop = True)
-    df_train_qts = pd.concat([df_lensed_qts,df_unlensed_qts_half],ignore_index = True)
-    df_train_qts=df_train_qts.sample(frac = 1).reset_index(drop = True)
-    xgboost_dense_qts_model=ml.train_xgboost_dense_qts(df_train_qts,from_df=True,scale_pos_weight=args.scale_pos_weight,max_depth=args.max_depth,n_estimators=args.n_estimators)
+    df_unlensed_qts_half = df_unlensed_qts_half.sample(frac = 1,random_state = 42).reset_index(drop = 1)
+    df_train_qts = pd.concat([df_lensed_qts,df_unlensed_qts_half],ignore_index = 1)
+    df_train_qts=df_train_qts.sample(frac = 1).reset_index(drop = 1)
+    xgboost_dense_qts_model=ml.train_xgboost_dense_qts(df_train_qts,from_df=1,scale_pos_weight=args.scale_pos_weight,max_depth=args.max_depth,n_estimators=args.n_estimators)
 
     if not os.path.exists(odir):
             os.makedirs(odir)
@@ -68,12 +68,12 @@ def main():
 
     df_lensed_qts = pd.read_csv(df_dir_train+'lensed_QTs'+tag+'.csv',index_col=[0] )[args.train_size_lensed:]
     df_unlensed_qts_half = pd.read_csv(df_dir_train+'unlensed_second_half_QTs'+tag+'.csv' ,index_col=[0])
-    df_unlensed_qts_half = df_unlensed_qts_half.sample(frac = 1,random_state = 42).reset_index(drop = True)
-    df_val_qts = pd.concat([df_lensed_qts,df_unlensed_qts_half],ignore_index = True)
-    df_val_qts=df_val_qts.sample(frac = 1).reset_index(drop = True)
+    df_unlensed_qts_half = df_unlensed_qts_half.sample(frac = 1,random_state = 42).reset_index(drop = 1)
+    df_val_qts = pd.concat([df_lensed_qts,df_unlensed_qts_half],ignore_index = 1)
+    df_val_qts=df_val_qts.sample(frac = 1).reset_index(drop = 1)
     df_val_qts=ml.predict_xgboost_dense_qts(df_val_qts,xgboost_dense_qts_model)
 
-    fig=ml.plot_ROCs(df_val_qts,logy=True,cols=['dense_H1_0', 'dense_L1_0', 'dense_V1_0','xgb_dense_QTS_0'])
+    fig=ml.plot_ROCs(df_val_qts,logy=1,cols=['dense_H1_0', 'dense_L1_0', 'dense_V1_0','xgb_dense_QTS_0'])
     plt.savefig(odir+'/plots'+'/validate-ROC-XGB_QT'+tag+'.png')
 
 
@@ -82,9 +82,9 @@ def main():
     df_lensed_qts = pd.read_csv(df_dir_train+'lensed_QTs'+tag+'.csv',index_col=[0] )[:args.cv_size_lensed]
     df_unlensed_qts_half = pd.read_csv(df_dir_train+'unlensed_half_QTs'+tag+'.csv' ,index_col=[0])
     df_unlensed_qts_second_half = pd.read_csv(df_dir_train+'unlensed_second_half_QTs'+tag+'.csv' ,index_col=[0])
-    df_cv_qts = pd.concat([df_lensed_qts,df_unlensed_qts_half],ignore_index = True)
+    df_cv_qts = pd.concat([df_lensed_qts,df_unlensed_qts_half],ignore_index = 1)
 
-    df_cv_qts=df_cv_qts.sample(frac = 1).reset_index(drop = True)
+    df_cv_qts=df_cv_qts.sample(frac = 1).reset_index(drop = 1)
 
 
     df_cv_qts.tail()
@@ -103,7 +103,7 @@ def main():
     fig,ax = plt.subplots()
     cols=['dense_H1_0','dense_L1_0','dense_V1_0']
     for i,(train_index, test_index) in enumerate(cv.split(df_cv_qts,df_cv_qts.Lensing.values)):
-        xgboost_dense_qts_model=ml.train_xgboost_dense_qts(df_cv_qts.iloc[train_index],from_df=True,n_estimators=args.n_estimators,max_depth = args.max_depth, scale_pos_weight=args.scale_pos_weight)
+        xgboost_dense_qts_model=ml.train_xgboost_dense_qts(df_cv_qts.iloc[train_index],from_df=1,n_estimators=args.n_estimators,max_depth = args.max_depth, scale_pos_weight=args.scale_pos_weight)
         joblib_file = odir+"/models/XGBQT_"+str(i+1)+tag+ ".pkl"  
         joblib.dump(xgboost_dense_qts_model, joblib_file)
         X=np.c_[df_cv_qts.iloc[test_index][cols]]
@@ -138,7 +138,7 @@ def main():
     df_lensed_qts = pd.read_csv(df_dir_test+'lensed_QTs'+tag+'.csv',index_col=[0] )
     df_unlensed_qts = pd.read_csv(df_dir_test+'unlensed_QTs'+tag+'.csv' ,index_col=[0])
 
-    if args.compare_to_blu ==True:
+    if args.compare_to_blu ==1:
         df_test_blu_lensed = pd.read_csv(blu_lensed,index_col=[0] )
         df_test_blu_unlensed = pd.read_csv(blu_unlensed,index_col=[0] )
         cols=['m1, m2, ra, sin_dec, a1, a2, costilt1, costilt2, costheta_jn',
@@ -147,8 +147,8 @@ def main():
                'm1, m2, ra, sin_dec', 'm1, m2']
         df_lensed_qts=df_lensed_qts.join(df_test_blu_lensed[cols])
         df_unlensed_qts=df_unlensed_qts.join(df_test_blu_unlensed[cols])
-    df_test_qts = pd.concat([df_lensed_qts,df_unlensed_qts],ignore_index = True)
-    df_test_qts=df_test_qts.sample(frac = 1).reset_index(drop = True)
+    df_test_qts = pd.concat([df_lensed_qts,df_unlensed_qts],ignore_index = 1)
+    df_test_qts=df_test_qts.sample(frac = 1).reset_index(drop = 1)
 
 
     xgboost_dense_qts_model = joblib.load(odir+'/models/XGBQT_0'+tag+'.pkl')
@@ -157,7 +157,7 @@ def main():
     df_test_qts=df_test_qts.dropna()
 
 
-    fig=ml.plot_ROCs(df_test_qts,cols=['dense_H1_0' ,'dense_L1_0','dense_V1_0','xgb_dense_QTS_0','m1, m2']                     ,labels=['ML H1 QTs', 'ML L1 QTs', 'ML V1 QTs','ML combined H1 L1 V1 QTS', '$B^L_U:$ $m_1 m_2$'],logy=True)
+    fig=ml.plot_ROCs(df_test_qts,cols=['dense_H1_0' ,'dense_L1_0','dense_V1_0','xgb_dense_QTS_0','m1, m2']                     ,labels=['ML H1 QTs', 'ML L1 QTs', 'ML V1 QTs','ML combined H1 L1 V1 QTS', '$B^L_U:$ $m_1 m_2$'],logy=1)
 
 
     plt.rcParams["figure.figsize"] = (10,10)
@@ -201,7 +201,7 @@ def main():
     
     print('\n Comparing to blu...\n')
 
-    if args.compare_to_blu==True:
+    if args.compare_to_blu==1:
         cols=['dense_H1_0' ,'dense_L1_0','dense_V1_0','m1, m2']
 
         labels=['ML H1 QTs', 'ML L1 QTs', 'ML V1 QTs', '$B^L_U:$ $m_1 m_2$']
@@ -223,7 +223,7 @@ def main():
     plt.show()
     df_test_qts.to_csv(odir+'/dataframes/ML_qts'+tag+'.csv')
 
-    if args.compare_to_blu ==True:
+    if args.compare_to_blu ==1:
 
         df_test=df_test_qts
         ml_stat='xgb_dense_QTS_0'
@@ -234,9 +234,9 @@ def main():
         bins=np.linspace(-6,0,30)
         #plt.ylim(-100,1e3)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Unlensed', histtype='step',density=True)
+        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Unlensed', histtype='step',density=1)
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Lensed', histtype='step',density=True)
+        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Lensed', histtype='step',density=1)
         plt.legend()
         #plt.ylim(0,300)
         plt.subplot(132)
@@ -244,9 +244,9 @@ def main():
         bins=np.linspace(-6,6,30)
         #plt.ylim(-100,1e3)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Unlensed', histtype='step',density=True)
+        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Unlensed', histtype='step',density=1)
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Lensed', histtype='step',density=True)
+        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Lensed', histtype='step',density=1)
         plt.legend()
         #plt.ylim(0,300)
         plt.subplot(133)
@@ -273,12 +273,12 @@ def main():
         bins=np.linspace(-5,0,30)
         #plt.ylim(-100,1e3)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Unlensed', histtype='step',density=True,color='C0',lw=4)
-        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Unlensed', histtype='step',density=True,color='C0',lw=2)
+        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Unlensed', histtype='step',density=1,color='C0',lw=4)
+        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Unlensed', histtype='step',density=1,color='C0',lw=2)
 
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Lensed', histtype='step',density=True,color='C1',lw=4)
-        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Lensed', histtype='step',density=True,color='C1',lw=2)
+        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Lensed', histtype='step',density=1,color='C1',lw=4)
+        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Lensed', histtype='step',density=1,color='C1',lw=2)
 
         plt.legend()
         plt.xlabel('FPP(log10)')
@@ -301,7 +301,7 @@ def main():
         plt.savefig(odir+'/plots'+'/compare-FPPs-blu-XGB_QT'+tag+'.png')
         plt.show()
 
-        fig,rocs=ml.plot_ROCs(df_test_qts,cols=['dense_H1_0' ,'dense_L1_0','dense_V1_0','xgb_dense_QTS_0','m1, m2']                     ,labels=['ML H1 QTs', 'ML L1 QTs', 'ML V1 QTs','ML combined H1 L1 V1 QTS', '$B^L_U:$ $m_1 m_2$'],logy=True)
+        fig,rocs=ml.plot_ROCs(df_test_qts,cols=['dense_H1_0' ,'dense_L1_0','dense_V1_0','xgb_dense_QTS_0','m1, m2']                     ,labels=['ML H1 QTs', 'ML L1 QTs', 'ML V1 QTs','ML combined H1 L1 V1 QTS', '$B^L_U:$ $m_1 m_2$'],logy=1)
 
 
 

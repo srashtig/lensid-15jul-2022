@@ -16,7 +16,7 @@ def main():
     parser.add_argument('-odir','--odir', help='Output directory to save models dataframes and plots',default='out')
     parser.add_argument('-tag','--tag', help='Tag for the dataframes',default='')
     
-    parser.add_argument('-compare_to_blu','--compare_to_blu', help='Compare the results with blu? True/False',type=bool,default=True)
+    parser.add_argument('-compare_to_blu','--compare_to_blu',type=int, help='Compare the results with blu? 1/0',default=1)
     parser.add_argument('-path_to_blu','--path_to_blu',help = 'help path to haris et al blu directory',default = '/home/srashti.goyal/strong-lensing-ml/data/dataframes/haris_et_al/' )
     parser.add_argument('-train_size_lensed','--train_size_lensed',type=int,help='no. of lensed pairs to train on',default=2400)
     parser.add_argument('-cv_size_lensed','--cv_size_lensed',type=int,help='no. of lensed pairs to crossvalidate on',default=2400)
@@ -47,9 +47,9 @@ def main():
     print('\n Training...\n')
     df_lensed_sky = pd.read_csv(df_dir_train+'lensed_sky'+tag+'.csv',index_col=[0] )[:args.train_size_lensed]
     df_unlensed_sky_half = pd.read_csv(df_dir_train+'unlensed_half_sky'+tag+'.csv' ,index_col=[0])
-    df_unlensed_sky_half = df_unlensed_sky_half.sample(frac = 1,random_state = 42).reset_index(drop = True)
-    df_train_sky = pd.concat([df_lensed_sky,df_unlensed_sky_half],ignore_index = True)
-    df_train_sky=df_train_sky.sample(frac = 1).reset_index(drop = True)
+    df_unlensed_sky_half = df_unlensed_sky_half.sample(frac = 1,random_state = 42).reset_index(drop = 1)
+    df_train_sky = pd.concat([df_lensed_sky,df_unlensed_sky_half],ignore_index = 1)
+    df_train_sky=df_train_sky.sample(frac = 1).reset_index(drop = 1)
 
 
     xgboost_sky_model=ml.train_xgboost_sky(df_train_sky,scale_pos_weight=args.scale_pos_weight,max_depth=args.max_depth,n_estimators=args.n_estimators)
@@ -71,14 +71,14 @@ def main():
 
     df_lensed_sky = pd.read_csv(df_dir_train+'lensed_sky'+tag+'.csv',index_col=[0] )[args.train_size_lensed:]
     df_unlensed_sky_half = pd.read_csv(df_dir_train+'unlensed_second_half_sky'+tag+'.csv' ,index_col=[0])
-    df_unlensed_sky_half = df_unlensed_sky_half.sample(frac = 1,random_state = 42).reset_index(drop = True)
-    df_val_sky = pd.concat([df_lensed_sky,df_unlensed_sky_half],ignore_index = True)
-    df_val_sky=df_val_sky.sample(frac = 1).reset_index(drop = True)
+    df_unlensed_sky_half = df_unlensed_sky_half.sample(frac = 1,random_state = 42).reset_index(drop = 1)
+    df_val_sky = pd.concat([df_lensed_sky,df_unlensed_sky_half],ignore_index = 1)
+    df_val_sky=df_val_sky.sample(frac = 1).reset_index(drop = 1)
 
 
     df_val_sky=ml.XGB_predict(df_val_sky,xgboost_sky_model)
 
-    fig=ml.plot_ROCs(df_val_sky,logy=True,cols=['bayestar_skymaps_blu','bayestar_skymaps_d2', 'bayestar_skymaps_d3', 'bayestar_skymaps_lsq',
+    fig=ml.plot_ROCs(df_val_sky,logy=1,cols=['bayestar_skymaps_blu','bayestar_skymaps_d2', 'bayestar_skymaps_d3', 'bayestar_skymaps_lsq',
            'xgb_pred_bayestar_skymaps'])
 
     plt.savefig(odir+'/plots'+'/validate-ROC-XGB_sky'+tag+'.png')
@@ -89,9 +89,9 @@ def main():
     df_lensed_sky = pd.read_csv(df_dir_train+'lensed_sky'+tag+'.csv',index_col=[0] )[:args.cv_size_lensed]
     df_unlensed_sky_half = pd.read_csv(df_dir_train+'unlensed_half_sky'+tag+'.csv' ,index_col=[0])
     df_unlensed_sky_second_half = pd.read_csv(df_dir_train+'unlensed_second_half_sky'+tag+'.csv' ,index_col=[0])
-    df_cv_sky = pd.concat([df_lensed_sky,df_unlensed_sky_half],ignore_index = True)
+    df_cv_sky = pd.concat([df_lensed_sky,df_unlensed_sky_half],ignore_index = 1)
 
-    df_cv_sky=df_cv_sky.sample(frac = 1).reset_index(drop = True)
+    df_cv_sky=df_cv_sky.sample(frac = 1).reset_index(drop = 1)
 
 
     cv = ml.StratifiedKFold(n_splits = args.cv_splits)
@@ -149,8 +149,8 @@ def main():
            'm1, m2, ra, sin_dec', 'm1, m2']
     df_lensed_sky=df_lensed_sky.join(df_test_blu_lensed[cols])
     df_unlensed_sky=df_unlensed_sky.join(df_test_blu_unlensed[cols])
-    df_test_sky = pd.concat([df_lensed_sky,df_unlensed_sky],ignore_index = True)
-    df_test_sky=df_test_sky.sample(frac = 1).reset_index(drop = True)
+    df_test_sky = pd.concat([df_lensed_sky,df_unlensed_sky],ignore_index = 1)
+    df_test_sky=df_test_sky.sample(frac = 1).reset_index(drop = 1)
 
 
     xgboost_sky_model = joblib.load(odir+'/models/XGBsky_0'+tag+'.pkl')
@@ -194,7 +194,7 @@ def main():
 
 
     colors=['C0','C1','C2','C3','C4','C5','C6','C7','C8','C9']
-    if args.compare_to_blu == True:
+    if args.compare_to_blu == 1:
         cols=['bayestar_skymaps_blu','ra, sin_dec']
         labels=['$B^L_U$ Bayestar skymaps','$B^L_U$ : RA DEC']
     else:
@@ -213,7 +213,7 @@ def main():
 
     df_test_sky.to_csv(odir+'/dataframes/ML_sky.csv')
     
-    if args.compare_to_blu ==True:
+    if args.compare_to_blu ==1:
         print('\n Comparing to blu ...\n')
 
         df_test=df_test_sky
@@ -224,17 +224,17 @@ def main():
         plt.xlabel('ML statistic')
         bins=np.linspace(-6,0,30)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Unlensed', histtype='step',density=True)
+        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Unlensed', histtype='step',density=1)
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Lensed', histtype='step',density=True)
+        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Lensed', histtype='step',density=1)
         plt.legend()
         plt.subplot(132)
         plt.xlabel('BLU statistic')
         bins=np.linspace(-5,6,30)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Unlensed', histtype='step',density=True)
+        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Unlensed', histtype='step',density=1)
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Lensed', histtype='step',density=True)
+        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Lensed', histtype='step',density=1)
         plt.legend()
         plt.subplot(133)
 
@@ -258,12 +258,12 @@ def main():
         bins=np.linspace(-5,0,30)
         #plt.ylim(-100,1e3)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Unlensed', histtype='step',density=True,color='C0',lw=4)
-        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Unlensed', histtype='step',density=True,color='C0',lw=2)
+        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Unlensed', histtype='step',density=1,color='C0',lw=4)
+        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Unlensed', histtype='step',density=1,color='C0',lw=2)
 
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Lensed', histtype='step',density=True,color='C1',lw=4)
-        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Lensed', histtype='step',density=True,color='C1',lw=2)
+        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Lensed', histtype='step',density=1,color='C1',lw=4)
+        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Lensed', histtype='step',density=1,color='C1',lw=2)
 
         plt.legend()
         plt.xlabel('FPP(log10)')
@@ -288,7 +288,7 @@ def main():
         plt.show()
 
         fig,rocs=ml.plot_ROCs(df_test_sky,cols=['xgb_pred_bayestar_skymaps','bayestar_skymaps_blu','ra, sin_dec'],\
-                                                                                         labels=['ML skymaps','$B^L_U$ Bayestar skymaps','$B^L_U$ : RA DEC'],logy=True,ylim=1e-2)
+                                                                                         labels=['ML skymaps','$B^L_U$ Bayestar skymaps','$B^L_U$ : RA DEC'],logy=1,ylim=1e-2)
 
         fpp_blu,eff_blu,thr_blu=rocs[blu_stat]
         fpp_ml,eff_ml,thr_ml=rocs[ml_stat]

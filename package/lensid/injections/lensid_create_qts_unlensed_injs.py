@@ -16,10 +16,10 @@ def main():
 
     parser.add_argument('-odir','--odir', help='Output directory',default='check')
     parser.add_argument('-start','--start', type=int, help='unlensed inj start index',default=0)
-    parser.add_argument('-whitened','--whitened',type=bool,help='True/False',default = False)
+    parser.add_argument('-whitened','--whitened',help='1/0', type = int, default = 0)
     parser.add_argument('-n','--n', type=int, help='no. of unlensed injs',default = 0)
     parser.add_argument('-mode','--mode', type = int, help='enter no : 1. default \t 2. test',default = 1)
-    parser.add_argument('-infile','--infile', help='.npz unlensed injs file path to load tags from',required = True)
+    parser.add_argument('-infile','--infile', help='.npz unlensed injs file path to load tags from',required = 1)
     parser.add_argument('-psd_mode','--psd_mode', type = int, help='enter no : 1. analytical \t 2.load from files',default = 1)
     parser.add_argument('-asd_dir','--asd_dir',help='optional, give directory where psd files are in format H1.txt, L1.txt, V1.txt',default=None)
     parser.add_argument('-qrange', '--qrange',type = int, help= '1. default is 3,7 for m1>60 and 4,10 otherwise. 2. wide is 3,30', default = 1)
@@ -99,7 +99,7 @@ def main():
         noise_signal_v1 = qtils.inject_noise_signal(signal_v1, psd_V, duration=duration,whitened=whitened)
 
         fname=str(data['event_tag'][i])
-        if whitened== True:
+        if whitened== 1:
             fname=fname+'-whitened'
         pow_H1[count]=qtils.plot_qt_from_ts(noise_signal_h1, data["tc"][i], q, outfname=odir+ "/H1/"+fname)
         pow_L1[count]=qtils.plot_qt_from_ts(noise_signal_l1, data["tc"][i], q, outfname=odir+ "/L1/"+fname)
@@ -109,6 +109,6 @@ def main():
 
         print(i)
     fname = odir+'/qt_power_unlensed'
-    if whitened== True:
+    if whitened== 1:
         fname=fname+'-whitened'
     np.savez(fname+'.npz',pow_H1=pow_H1,pow_L1=pow_L1,pow_V1=pow_V1,fnames=fnames)

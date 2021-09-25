@@ -117,10 +117,10 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
     '''
     
     pre_model = tf.keras.applications.DenseNet201(
-        input_shape=(128, 128, 3), weights="imagenet", include_top=False
+        input_shape=(128, 128, 3), weights="imagenet", include_top=0
     )
 
-    pre_model.trainable = True
+    pre_model.trainable = 1
     model = tf.keras.Sequential(
         [
             pre_model,
@@ -147,20 +147,20 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
         monitor="val_accuracy",
         mode="max",
         verbose=1,
-        save_best_only=True,
+        save_best_only=1,
     )
     mc_untrained = ModelCheckpoint(
         "untrained_" + f,
         monitor="val_accuracy",
         mode="max",
         verbose=1,
-        save_best_only=True,
+        save_best_only=1,
     )
 
     start_time = time.time()
     lr_schedule = tf.keras.callbacks.LearningRateScheduler(lrfn, verbose=1)
 
-    if pre_model.trainable == True:
+    if pre_model.trainable == 1:
         history = model.fit(
             input_matrix[:, :, :, :3],
             labels,
@@ -169,10 +169,10 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
             callbacks=lr_schedule,#[lr_schedule, mc_trained, es],
             verbose=1,
             validation_split=0.2,
-            shuffle=True,
+            shuffle=1,
         )
 
-    elif pre_model.trainable == False:
+    elif pre_model.trainable == 0:
         history = model.fit(
             input_matrix[:, :, :, :3],
             labels,
@@ -181,7 +181,7 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
             callbacks=lr_schedule,#[lr_schedule, mc_untrained, es],
             verbose=1,
             validation_split=0.2,
-            shuffle=True,
+            shuffle=1,
         )
     end_time = time.time()
     print("Time Taken: ", end_time - start_time)
@@ -235,7 +235,7 @@ class generate_resize_densenet_fm:
         images = []
         missing_ids = []
         for i, file_path in enumerate(file_paths):
-            if os.path.isfile(file_path) == True:
+            if os.path.isfile(file_path) == 1:
                 img = cv2.imread(file_path)
                 img = cv2.resize(img, (img_rows, img_cols))
             else:
@@ -259,8 +259,8 @@ class generate_resize_densenet_fm:
         det,
         data_mode_dense="current",
         data_dir="../../data/qts/test/",
-        phenom=False,
-        whitened=False,
+        phenom=0,
+        whitened=0,
     ):
         """
         Reads and resizes Qtransform images from the storage given the file
@@ -273,10 +273,10 @@ class generate_resize_densenet_fm:
                 images.
                 
             phenom(bool): to addtionally compute hand derived features form
-                the Qtransforms and add to the dataframe. default: False.
+                the Qtransforms and add to the dataframe. default: 0.
                 
             whitened(bool): to use the whitened Qtransformed images. 
-                default: False.
+                default: 0.
 
         Returns:
             4-dim numpy array(n,128,128,3): superimposed RGB images of 
@@ -288,7 +288,7 @@ class generate_resize_densenet_fm:
             list: missing_ids, containing the row ids of the dataframe 
                 for which Qtransform images are not found.
                 
-            pandas dataframe(returned only if phenom=True): adds the 
+            pandas dataframe(returned only if phenom=1): adds the 
                 hand derived features using the Qtransform images as 
                 columns to the input dataframe.
         """
@@ -302,7 +302,7 @@ class generate_resize_densenet_fm:
 
         prefix_paths = det + "/"
         suffix_paths = ".png"
-        if whitened == True:
+        if whitened == 1:
             suffix_paths = "-whitened.png"
 
         img_0_paths = add(
@@ -344,7 +344,7 @@ class generate_resize_densenet_fm:
             df["lsq_overlap_qts_" + det],
         ) = (mean_overlap_qts, std_overlap_qts, lsq_qts)
         missing_ids = np.union1d(missing_ids_0, missing_ids_1).astype(int)
-        if phenom == False:
+        if phenom == 0:
             return x_comp1, labels, missing_ids
         else:
             return x_comp1, labels, missing_ids, df
@@ -377,12 +377,12 @@ def Dense_predict(model, df, input_matrix, missing_ids):
 
 def train_xgboost_dense_qts(
     df_train,
-    from_df=True,
+    from_df=1,
     model_id_dense=0,
     n_estimators=135,
     max_depth=6,
     scale_pos_weight=0.01,
-    include_phenom=False,
+    include_phenom=0,
 ):
     """
     Train XGBoost Algorithm for the Qtransforms, which takes input as the 
@@ -409,7 +409,7 @@ def train_xgboost_dense_qts(
                 rates. Default: 0.01.
                 
         include_phenom(bool): include hand dereived features also while 
-            training. Default: False.
+            training. Default: 0.
 
     Returns:
         the trained XGBoost model
@@ -419,7 +419,7 @@ def train_xgboost_dense_qts(
         "dense_L1_" + str(model_id_dense),
         "dense_V1_" + str(model_id_dense),
     ]
-    if include_phenom == True:
+    if include_phenom == 1:
         phenom_features = [
             "mean_overlap_qts_H1",
             "std_overlap_qts_H1",
@@ -432,7 +432,7 @@ def train_xgboost_dense_qts(
             "lsq_overlap_qts_V1",
         ]
         cols = cols + phenom_features
-    if from_df == True:
+    if from_df == 1:
         xgb_qts_train, labels = np.c_[df_train[cols]], df_train.Lensing.values
     else:
         print("Dense predictions not in df")
@@ -452,9 +452,9 @@ def predict_xgboost_dense_qts(
     model,
     model_id_dense=0,
     model_id_xgb=0,
-    from_df=True,
-    fill_missing=True,
-    include_phenom=False,
+    from_df=1,
+    fill_missing=1,
+    include_phenom=0,
 ):
     """
     Adds XGBoost Algorithm predictions for the Qtransforms, which takes input
@@ -477,10 +477,10 @@ def predict_xgboost_dense_qts(
         fill_missing(bool): In case of missing Qtransform images, or DenseNet 
             predictions, return the product of the predictions for the 
             available detector DenseNet predicitons, other return None.
-            Default: True
+            Default: 1
             
         include_phenom(bool): include hand dereived features also while 
-            training. Default: False.
+            training. Default: 0.
 
     Returns:
         pandas Dataframe: the input dataframe with additional column eg.
@@ -492,7 +492,7 @@ def predict_xgboost_dense_qts(
         "dense_L1_" + str(model_id_dense),
         "dense_V1_" + str(model_id_dense),
     ]
-    if include_phenom == True:
+    if include_phenom == 1:
         phenom_features = [
             "mean_overlap_qts_H1",
             "std_overlap_qts_H1",
@@ -506,7 +506,7 @@ def predict_xgboost_dense_qts(
         ]
         cols = cols + phenom_features
 
-    if from_df == True:
+    if from_df == 1:
         x1, x2, x3 = df[cols[0]], df[cols[1]], df[cols[2]]
         missing_out = (x1.isna() | x2.isna() | x3.isna()).values
         missing_all = (x1.isna() & x2.isna() & x3.isna()).values
@@ -516,7 +516,7 @@ def predict_xgboost_dense_qts(
     input_matrix = np.c_[df[cols]]
 
     y_predict = model.predict_proba(input_matrix)[:, 1]
-    if fill_missing == True:
+    if fill_missing == 1:
         y_predict[missing_out] = (
             x1[missing_out].fillna(1).values
             * x2[missing_out].fillna(1).values
@@ -801,7 +801,7 @@ def train_xgboost_sky(
 
 def plot_ROCs(
     df,
-    logy=False,
+    logy=0,
     cols=[
         "dense_H1",
         "dense_L1",
@@ -813,7 +813,7 @@ def plot_ROCs(
     ylim=0,
 ):
     """
-    Plots the ROC(reciever operating curves, Efficiency v/s False Positive 
+    Plots the ROC(reciever operating curves, Efficiency v/s 0 Positive 
     Probability) from the input dataframe, for the given set of columns.
 
     Parameters:
@@ -821,7 +821,7 @@ def plot_ROCs(
             and the ranking statistics as columns, along with the labels in a
             column ('Lensing').
             
-        logy(bool): plot the yscale in log, True/False(default).
+        logy(bool): plot the yscale in log, 1/0(default).
         
         cols(list): list of the column names for which ROCs should be plot.
         
@@ -860,7 +860,7 @@ def plot_ROCs(
     plt.figure(1)
     plt.xlabel("FAP")
     plt.xscale("log")
-    if logy == True:
+    if logy == 1:
         plt.yscale("log")
     plt.ylim(ylim, 1)
     plt.xlim(1e-5, 1)
@@ -870,7 +870,7 @@ def plot_ROCs(
     return fig, rocs
 
 
-def get_fars(df, col, df_ref, col_ref, plot=False, logy=False):
+def get_fars(df, col, df_ref, col_ref, plot=0, logy=0):
     """
     Calculates the false positive probability(FPP) for the given pairs of 
     events and their ranking statistic by using the ranking statistics(or ROC)
@@ -892,9 +892,9 @@ def get_fars(df, col, df_ref, col_ref, plot=False, logy=False):
         col(str): name of Ranking statistic column for the background
             injections, which will be taken as reference.
             
-        plot(bool):Return the Threshold v/s FPP plot, default: False.
+        plot(bool):Return the Threshold v/s FPP plot, default: 0.
         
-        logy(float): Plot the yscale in log, default: False
+        logy(float): Plot the yscale in log, default: 0
 
     Returns:
         1-d numpy array of the false posiive probabilities for the pairs in hand.
@@ -907,7 +907,7 @@ def get_fars(df, col, df_ref, col_ref, plot=False, logy=False):
         df[col], np.flip(thresholds), np.flip(false_positive_rate)
     )
     colors = ["C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
-    if plot == True:
+    if plot == 1:
         plt.figure(figsize=(7, 5))
         plt.plot(thresholds, false_positive_rate, label=col_ref)
         plt.plot(df[col], fars, "x")
@@ -925,7 +925,7 @@ def get_fars(df, col, df_ref, col_ref, plot=False, logy=False):
         plt.grid()
         plt.xlabel("Threshold")
         plt.ylabel("FAP")
-        if logy == True:
+        if logy == 1:
             plt.yscale("log")
         plt.legend()
     return fars

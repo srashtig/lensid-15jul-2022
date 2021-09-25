@@ -1,14 +1,14 @@
 #Default
-calc_features_sky : True
-cal_features_qts : True
+calc_features_sky : 1
+cal_features_qts : 1
 col_dict : {ML QTs : xgb_dense_QTS_0 , ML combined: densnet_xgbsky_bayestar_mul_0, ML sky : xgb_pred_bayestar_skymaps}
-calc_fpp : True
-odir : O3_events
+calc_fpp : 1
+odir : /home/srashti.goyal/lensid_runs/O3_events
 #Data
 in_df : /home/srashti.goyal/lensid-ml-O3/O3_ML/dataframes/filtered_sky_mass_pairs.csv
 data_dir_qts : /home/srashti.goyal/lensid-ml-O3/O3_ML/qts/
-whitened : False
-include_phenom : False
+whitened : 0
+include_phenom : 0
 data_dir_sky : /home/srashti.goyal/lensid-ml-O3/O3_ML/bayestar_skymaps/
 tag_qts : _kaggle
 tag_sky : ''

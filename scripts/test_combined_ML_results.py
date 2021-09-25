@@ -16,7 +16,7 @@ def main():
     parser.add_argument('-tag_qts','--tag_qts', help='tag for reading ML with qtransforms predictions ',default='_kaggle')
     parser.add_argument('-tag_sky','--tag_sky', help='tag for reading MK with skymaps predictions ',default='')
 
-    parser.add_argument('-compare_to_blu','--compare_to_blu', help='Compare the results with blu? True/False',type=bool,default=True)
+    parser.add_argument('-compare_to_blu','--compare_to_blu', help='Compare the results with blu? 1/0',default=1)
     args = parser.parse_args()
     print('\n Arguments used:- \n')
     
@@ -40,7 +40,7 @@ def main():
     if not os.path.exists(odir+'/dataframes'):
             os.makedirs(odir+'/dataframes')        
 
-    if args.compare_to_blu == True:
+    if args.compare_to_blu == 1:
         df_test=pd.merge(df_sky, df_qts, on=['img_0', 'img_1','Lensing','m1, m2, ra, sin_dec, a1, a2, costilt1, costilt2, costheta_jn',
        'm1, m2, ra, sin_dec, costheta_jn', 'ra, sin_dec',
        '# m1, m2, ra, sin_dec, a1, a2, costilt1, costilt2',
@@ -85,7 +85,7 @@ def main():
     tprs_lower = np.maximum(mean_tpr-std_tpr,0)
     ax.fill_between(mean_fpr,tprs_lower,tprs_upper,color="grey",alpha=.5)
 
-    if args.compare_to_blu ==True: 
+    if args.compare_to_blu ==1: 
         colors=['C0','C1','C2','C3','C4','C5','C6','C7','C8','C9']
         cols=['m1, m2, ra, sin_dec']
         labels=[r'$B^L_U$: $m_1,m_2$, $\alpha$, $\delta$']
@@ -103,7 +103,7 @@ def main():
 
     df_test.to_csv(odir+'/dataframes/ML_combined'+tag_qts+tag_sky+'.csv')
 
-    if args.compare_to_blu == True:
+    if args.compare_to_blu == 1:
         ml_stat='densnet_xgbsky_bayestar_mul_0'
         blu_stat= 'm1, m2, ra, sin_dec'
         plt.figure(figsize=(20,5))
@@ -112,9 +112,9 @@ def main():
         bins=np.linspace(-11,0,30)
         #plt.ylim(-100,1e3)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Unlensed', histtype='step',density=True)
+        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Unlensed', histtype='step',density=1)
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Lensed', histtype='step',density=True)
+        plt.hist(np.log10(df[ml_stat]),bins=bins,label='Lensed', histtype='step',density=1)
         plt.legend()
         #plt.ylim(0,300)
         plt.subplot(132)
@@ -122,9 +122,9 @@ def main():
         bins=np.linspace(-5,6,30)
         #plt.ylim(-100,1e3)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Unlensed', histtype='step',density=True)
+        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Unlensed', histtype='step',density=1)
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Lensed', histtype='step',density=True)
+        plt.hist(np.log10(df[blu_stat]),bins=bins,label='Lensed', histtype='step',density=1)
         plt.legend()
         #plt.ylim(0,300)
         plt.subplot(133)
@@ -151,12 +151,12 @@ def main():
         bins=np.linspace(-5,0,30)
         #plt.ylim(-100,1e3)
         df=df_test[df_test['Lensing'] == 0]
-        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Unlensed', histtype='step',density=True,color='C0',lw=4)
-        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Unlensed', histtype='step',density=True,color='C2',lw=2)
+        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Unlensed', histtype='step',density=1,color='C0',lw=4)
+        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Unlensed', histtype='step',density=1,color='C2',lw=2)
 
         df=df_test[df_test['Lensing'] == 1]
-        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Lensed', histtype='step',density=True,color='C1',lw=4)
-        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Lensed', histtype='step',density=True,color='C1',lw=2)
+        plt.hist(np.log10(df[ml_stat+'_fpp']),bins=bins,label='ML Lensed', histtype='step',density=1,color='C1',lw=4)
+        plt.hist(np.log10(df[blu_stat+'_fpp']),bins=bins,label='BLU Lensed', histtype='step',density=1,color='C1',lw=2)
 
         plt.legend()
         plt.xlabel('FPP(log10)')
@@ -184,7 +184,7 @@ def main():
         plt.show()
 
 
-        fig,rocs=ml.plot_ROCs(df_test,cols=['densnet_xgbsky_bayestar_mul_0','m1, m2, ra, sin_dec'],labels =['ML bayestar sky x ML QTs','$B^L_U$'],logy=True,ylim=7e-2)
+        fig,rocs=ml.plot_ROCs(df_test,cols=['densnet_xgbsky_bayestar_mul_0','m1, m2, ra, sin_dec'],labels =['ML bayestar sky x ML QTs','$B^L_U$'],logy=1,ylim=7e-2)
 
 
         # In[13]:
