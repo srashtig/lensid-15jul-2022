@@ -1,5 +1,5 @@
 import os
-base_out_dir = '/home/srashti.goyal/lensid_runs/ML_2p0'
+base_out_dir = '/home/srashti.goyal/lensid_runs/ML_2p0_AnalyticalPsd'
 
 data_gen_train = 1
 data_gen_test = 1
@@ -13,37 +13,37 @@ data_gen_custom = 0
 #train-lensed
 train_lensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/training/dominik_plaw2_lensed_inj_params_include_pol_phi0_refined.npz'
 start_idx_train_lensed = 0
-num_train_lensed = 2813
+num_train_lensed = 5 #2813
 
 #train-unlensed
 start_idx_train_unlensed = 0
-num_train_unlensed =1000
+num_train_unlensed = 10 #1000
 train_unlensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/training/analytical_psd_Dominik_powerlaw2_inj_samples_withsnr_refined.npz'
 
 #test-lensed
 test_lensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/haris-et-al/lensed_inj_data.npz'
 start_idx_test_lensed = 0 
-num_test_lensed = 300
+num_test_lensed = 5 #300
 
 #test-unlensed
 test_unlensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/haris-et-al/unlensed_inj_data.npz'
 start_idx_test_unlensed = 0 
-num_test_unlensed = 1004
+num_test_unlensed = 10 #1004
 
 #qts
 out_dir_qts = '/data/qts'
 asd_dir_txt = '/home/srashti.goyal/lensid/data/PSDs/O3a_representative_psd'
 whitened = 1
 qmode = 2 #(1 -> q = (3,7 m1>60; 4,8 m1<60)  , 2 -> q = (3,30))
-psd_mode = 2  #(1: analytical 2: from asd_dir_txt)
+psd_mode = 1  #(1: analytical 2: from asd_dir_txt)
 
 #dataframes
 out_dir_dfs = '/data/dataframes'
 
 #skymaps
 out_dir_sky = '/data/bayestar_skymaps'
-psd_xml = '/home/srashti.goyal/lensid/data/PSDs/O3a_representative_psd/O3a_representative.xml'
-
+#psd_xml = '/home/srashti.goyal/lensid/data/PSDs/O3a_representative_psd/O3a_representative.xml'
+psd_xml = '/home/srashti.goyal/lensid/data/PSDs/analytical_psd.xml'
 #custom
 inj_pars = ''
 is_lensed = 0
