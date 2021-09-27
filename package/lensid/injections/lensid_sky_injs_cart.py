@@ -24,7 +24,7 @@ def main():
         unlensed_data=np.load(args.infile)       
         outfile = odir + '/' + str(unlensed_data['event_tag'][index]) + '.npz'
         infile = indir + '/unlensed/' + str(index) + '/0.fits'
-        os.system('fits_to_cart.py -infile %s -outfile %s'%(infile,outfile))
+        os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile,outfile))
     else:
         lensed_data=np.load(args.infile)
 
