@@ -13,22 +13,22 @@ data_gen_custom = 0
 #train-lensed
 train_lensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/training/dominik_plaw2_lensed_inj_params_include_pol_phi0_refined.npz'
 start_idx_train_lensed = 0
-num_train_lensed = 5 #2813
+num_train_lensed = 2813
 
 #train-unlensed
 start_idx_train_unlensed = 0
-num_train_unlensed = 10 #1000
+num_train_unlensed = 1000
 train_unlensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/training/analytical_psd_Dominik_powerlaw2_inj_samples_withsnr_refined.npz'
 
 #test-lensed
 test_lensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/haris-et-al/lensed_inj_data.npz'
 start_idx_test_lensed = 0 
-num_test_lensed = 5 #300
+num_test_lensed = 300
 
 #test-unlensed
 test_unlensed_inj_pars = '/home/srashti.goyal/lensid/data/injection_pars/haris-et-al/unlensed_inj_data.npz'
 start_idx_test_unlensed = 0 
-num_test_unlensed = 10 #1004
+num_test_unlensed = 1000
 
 #qts
 out_dir_qts = '/data/qts'
@@ -44,6 +44,8 @@ out_dir_dfs = '/data/dataframes'
 out_dir_sky = '/data/bayestar_skymaps'
 #psd_xml = '/home/srashti.goyal/lensid/data/PSDs/O3a_representative_psd/O3a_representative.xml'
 psd_xml = '/home/srashti.goyal/lensid/data/PSDs/analytical_psd.xml'
+
+
 #custom
 inj_pars = ''
 is_lensed = 0
