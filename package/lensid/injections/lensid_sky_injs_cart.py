@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from numpy.core.defchararray import add
 import sys
-
+import lensid.utils.lensid_fits_to_cart as ftc
 import argparse
 
 def main():
@@ -15,6 +15,7 @@ def main():
     parser.add_argument('-index','--index', type=int, help='index of injection file',required=True)
     parser.add_argument('-lensed','--lensed',  help='lensed injection? y/n',default='n')
     parser.add_argument('-infile','--infile', help='.npz lensed injs file path to load tags from',required = True)
+    parser.add_argument('-force','--force', help='overwrite the output .npz file if exists already..(0/1)', default = 0)
     args = parser.parse_args()
     index = args.index
     odir = args.odir
@@ -24,7 +25,7 @@ def main():
         unlensed_data=np.load(args.infile)       
         outfile = odir + '/' + str(unlensed_data['event_tag'][index]) + '.npz'
         infile = indir + '/unlensed/' + str(index) + '/0.fits'
-        os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile,outfile))
+        ftc._main(infile,outfile,args.force)
     else:
         lensed_data=np.load(args.infile)
 
@@ -35,6 +36,7 @@ def main():
         outfile2 = odir + '/' + str(fname_img2)+ '.npz'
         infile1 = indir + '/lensed/' + str(index) + '/0/0.fits'
         infile2 = indir + '/lensed/' + str(index) + '/1/0.fits'
-
-        os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile1,outfile1))
-        os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile2,outfile2))
+        ftc._main(infile1,outfile2,args.force)
+        ftc._main(infile2,outfile2,args.force)
+        #os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile1,outfile1))
+        #os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile2,outfile2))
