@@ -2,7 +2,9 @@
 __author__ = "haris.k, apratim.ganguly"
 # ----------------------------------------------------------------
 import argparse
-import sys, csv, os
+import sys
+import csv
+import os
 import numpy as np
 from cosmology_models import LCDM
 from scipy import special
@@ -15,7 +17,11 @@ lcdm = LCDM(0.3)
 parser = argparse.ArgumentParser(
     description="Create a dat file with BBH injection samples with a given z and component masses distribution"
 )
-parser.add_argument("-outfile", "--outfile", help="name of output file", required=True)
+parser.add_argument(
+    "-outfile",
+    "--outfile",
+    help="name of output file",
+    required=True)
 parser.add_argument(
     "-z_pdf_model",
     "--z_pdf_model",
@@ -23,16 +29,29 @@ parser.add_argument(
     required=True,
 )
 parser.add_argument(
-    "-z_max", "--z_max", help="readshift upper limit", type=float, required=True
-)
+    "-z_max",
+    "--z_max",
+    help="readshift upper limit",
+    type=float,
+    required=True)
 parser.add_argument(
     "-mass_pdf_model",
     "--mass_pdf_model",
     help="comp. mass_pdf_models: powerlaw1, powerlaw2, (see doi:10.3847/2041-8205/833/1/L1) ,schechter, lognormal, gaussian  (see Liang Dai et al. PRD,2017), powerpluspeak ",
     required=True,
 )
-parser.add_argument("-f_ref", "--f_ref", help="f_ref", type=float, default=20.0)
-parser.add_argument("-n", "--n", type=int, help="number of samples", required=True)
+parser.add_argument(
+    "-f_ref",
+    "--f_ref",
+    help="f_ref",
+    type=float,
+    default=20.0)
+parser.add_argument(
+    "-n",
+    "--n",
+    type=int,
+    help="number of samples",
+    required=True)
 
 
 args = parser.parse_args()
@@ -100,7 +119,7 @@ def rejection_sample(pdf_bins, pdf_vals, xmin=None, xmax=None, n=1000):
             num = n - naccept
         else:
             num = len(arr)
-        ran[naccept : naccept + num] = arr[0:num]
+        ran[naccept: naccept + num] = arr[0:num]
         naccept = naccept + num
         ntrial += 1
     return ran
@@ -108,10 +127,10 @@ def rejection_sample(pdf_bins, pdf_vals, xmin=None, xmax=None, n=1000):
 
 def schechter_mass_distribution(z, m_lower=5.0, gamma_z=6.0):
     """
-	The function return Schechter source frame probability distribution
-	of mass ms for given a redshift z. 
-	Ref: Eq.(21), Liang Dai et al. PRD(2017)
-	"""
+        The function return Schechter source frame probability distribution
+        of mass ms for given a redshift z.
+        Ref: Eq.(21), Liang Dai et al. PRD(2017)
+        """
     m = np.linspace(m_lower, 200.0, 5000)
     m_prime = 3 * np.power((1 + z) / 2.5, 0.5)
     pdf = (
@@ -207,7 +226,8 @@ else:
         qmin = 10.0 / 50.0
         q = np.random.rand(4 * n) * (1 - qmin) + qmin
         c = 1.35 / (np.power(mmin, -1.35) - np.power(mmax, -1.35))
-        m1s_samples = 1 / np.power(np.power(mmin, -1.35) - 1.35 * u1 / c, 1 / 1.35)
+        m1s_samples = 1 / \
+            np.power(np.power(mmin, -1.35) - 1.35 * u1 / c, 1 / 1.35)
         m2s_samples = q * m1s_samples
         index = np.where(m1s_samples + m2s_samples <= 100)
         m1s_samples = m1s_samples[index]
@@ -219,11 +239,11 @@ else:
         mmin = 10.0
         mmax = 50.0
         qmin = 10.0 / 50.0
-        q = np.random.rand(4*n) * (1 - qmin) + qmin
+        q = np.random.rand(4 * n) * (1 - qmin) + qmin
         pdf_bins, pdf_vals = np.loadtxt(
             "../../data/power_law_plus_peak_m1_source_gwtc2.txt", unpack=True
         )
-        m1s_samples = rejection_sample(pdf_bins, pdf_vals, mmin, mmax, n=4*n)
+        m1s_samples = rejection_sample(pdf_bins, pdf_vals, mmin, mmax, n=4 * n)
         m2s_samples = q * m1s_samples
         index = np.where(m1s_samples + m2s_samples <= 100)
         m1s_samples = m1s_samples[index]
@@ -255,13 +275,10 @@ psi_samples = np.random.rand(n) * 2 * np.pi
 t_samples = np.random.rand(n) * 24 * 60.0 * 60 + 1249852257.0  # GW190814
 
 
-with open(outfile + "_%s_%s.dat" %(mass_pdf_model,z_pdf_model), "w") as f:
+with open(outfile + "_%s_%s.dat" % (mass_pdf_model, z_pdf_model), "w") as f:
     writer = csv.writer(f, delimiter="\t")
     writer.writerow(
-        [
-            "z\tldistance\tm1z\tm2z\ta1\ta2\ttilt_1\ttilt_2\ttheta_jn\tphi_jl\tphi_12\tphase\tra\tdec\tpsi\tf_ref\tt0"
-        ]
-    )
+        ["z\tldistance\tm1z\tm2z\ta1\ta2\ttilt_1\ttilt_2\ttheta_jn\tphi_jl\tphi_12\tphase\tra\tdec\tpsi\tf_ref\tt0"])
     writer.writerows(
         zip(
             z_samples,

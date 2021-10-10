@@ -58,7 +58,7 @@ from sklearn.model_selection import StratifiedKFold
 
 
 def lrfn(epoch):
-    """Helper function for training densnets, returns the learning rate at 
+    """Helper function for training densnets, returns the learning rate at
     each epoch."""
     LR_START = 0.00001
     LR_MAX = 0.00005  # * strategy.num_replicas_in_sync
@@ -84,22 +84,21 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
         (generated from Qtransforms) and labels.
 
     Parameters:
-        input_matrix (4-dim numpy array(n,128,128,3)): superimposed 
+        input_matrix (4-dim numpy array(n,128,128,3)): superimposed
             RGB images of Qtransformsfor n event pairs.
-            
+
         labels(1-d numpy array (n,1)): array of lensed(0) and ones(1).
-        
+
         det(str): either of the three detectors 'H1','L1','V1'.
-        
+
         epochs(int): no. of gradient descent steps to take.
-        
+
         kernel_lr(float): l2 regulariser parameter, default: 1
-        
+
     Returns:
         model(Keras model): trained on the input matrix and labels.
     """
-    
-    
+
     '''
     gpus = tf.config.list_physical_devices('GPU')
     if gpus:
@@ -115,7 +114,7 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
             # Virtual devices must be set before GPUs have been initialized
             print(e)
     '''
-    
+
     pre_model = tf.keras.applications.DenseNet201(
         input_shape=(128, 128, 3), weights="imagenet", include_top=0
     )
@@ -166,7 +165,7 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
             labels,
             batch_size=32,
             epochs=epochs,
-            callbacks=lr_schedule,#[lr_schedule, mc_trained, es],
+            callbacks=lr_schedule,  # [lr_schedule, mc_trained, es],
             verbose=1,
             validation_split=0.2,
             shuffle=1,
@@ -178,7 +177,7 @@ def train_densenet(input_matrix, labels, det, epochs, kernel_lr=1):
             labels,
             batch_size=32,
             epochs=epochs,
-            callbacks=lr_schedule,#[lr_schedule, mc_untrained, es],
+            callbacks=lr_schedule,  # [lr_schedule, mc_untrained, es],
             verbose=1,
             validation_split=0.2,
             shuffle=1,
@@ -195,7 +194,7 @@ class generate_resize_densenet_fm:
         images.
 
     Attributes:
-        df(pandas dataframe): dataframe with img_0, img_1 and Lensing as the 
+        df(pandas dataframe): dataframe with img_0, img_1 and Lensing as the
             columns for loading the Qtransform images using img_0 and img_1
             values and train using 'Lensing' as labels.
     """
@@ -206,7 +205,7 @@ class generate_resize_densenet_fm:
 
         Parameters:
             df(pandas dataframe): dataframe with img_0, img_1 and Lensing as
-                the columns for loading the Qtransform images using img_0 and 
+                the columns for loading the Qtransform images using img_0 and
                 img_1 values and train using 'Lensing' as labels.
         """
         self.df = df
@@ -216,19 +215,19 @@ class generate_resize_densenet_fm:
         Reads and resizes Qtransform images from the storage given the file paths.
 
         Parameters:
-            file_paths(list): List containing the paths of the Qtransform 
+            file_paths(list): List containing the paths of the Qtransform
                 images to be read.
-                
+
             img_rows(int): width of the desired Qtransform images.
-            
+
             img_cols(int): height of the desired Qtransform images.
-            
+
             channels(int): Depth of each Qtransform image(RGB=3).
 
         Returns:
             4-dim numpy array(n,img_rows,img_cols,channels): stacked images
                 of the n Qtransforms of size (img_rows,img_cols,channels).
-                
+
             list(missing_ids): list of ids for which QT images are not found
                 in the given file paths.
         """
@@ -239,7 +238,7 @@ class generate_resize_densenet_fm:
                 img = cv2.imread(file_path)
                 img = cv2.resize(img, (img_rows, img_cols))
             else:
-                print(' %s not found'%file_path)
+                print(' %s not found' % file_path)
                 img = np.zeros([img_rows, img_cols, channels])
                 missing_ids.append(i)
             images.append(img)
@@ -268,28 +267,28 @@ class generate_resize_densenet_fm:
 
         Parameters:
             det(str): either of the three detectors 'H1','L1','V1'.
-            
-            data_dir(str): path of the directory containing the Qtransform 
+
+            data_dir(str): path of the directory containing the Qtransform
                 images.
-                
+
             phenom(bool): to addtionally compute hand derived features form
                 the Qtransforms and add to the dataframe. default: 0.
-                
-            whitened(bool): to use the whitened Qtransformed images. 
+
+            whitened(bool): to use the whitened Qtransformed images.
                 default: 0.
 
         Returns:
-            4-dim numpy array(n,128,128,3): superimposed RGB images of 
+            4-dim numpy array(n,128,128,3): superimposed RGB images of
                 Qtransforms for n event pairs.
-                
-            list(size n): labels of event pairs (Lensing column of the 
+
+            list(size n): labels of event pairs (Lensing column of the
                 input dataframe).
-                
-            list: missing_ids, containing the row ids of the dataframe 
+
+            list: missing_ids, containing the row ids of the dataframe
                 for which Qtransform images are not found.
-                
-            pandas dataframe(returned only if phenom=1): adds the 
-                hand derived features using the Qtransform images as 
+
+            pandas dataframe(returned only if phenom=1): adds the
+                hand derived features using the Qtransform images as
                 columns to the input dataframe.
         """
         df = self.df
@@ -357,12 +356,12 @@ def Dense_predict(model, df, input_matrix, missing_ids):
 
     Parameters:
         model(Keras model): trained densenet model.
-        
+
         df(pandas Dataframe): input data frame.
-        
+
         input_matrix(4-dim numpy array(n,128,128,3): superimposed RGB images
             of Qtransforms for n event pairs.
-            
+
         missing_ids(list): containing the row ids of the dataframe for which
             Qtransform images are not found.
 
@@ -385,30 +384,30 @@ def train_xgboost_dense_qts(
     include_phenom=0,
 ):
     """
-    Train XGBoost Algorithm for the Qtransforms, which takes input as the 
+    Train XGBoost Algorithm for the Qtransforms, which takes input as the
     three detector predictions of the trained DenseNet models, and optionally
     the hand derieved features from Qtransforms, for given set of event pairs.
 
     Parameters:
-        df_train(pandas Dataframe): Dataframe containing the img_0, img_1, 
+        df_train(pandas Dataframe): Dataframe containing the img_0, img_1,
             Lensing(labels), and the three Densenet predictions for the
             three detectors, eg: 'dense_H1_0' etc.. Optionally should have
             hand derieved features as columns.
-            
+
         model_id_dense(int): Identifier for the DenseNet prediction columns
             in the Dataframe. Default: 0.
-            
-        n_estimators(int): hyperparameter of XGBoost, setting the maximum 
+
+        n_estimators(int): hyperparameter of XGBoost, setting the maximum
             no. of trees. Default: 135.
-            
-        max_depth(int): hyperparameter of XGBoost, setting the maximum size 
+
+        max_depth(int): hyperparameter of XGBoost, setting the maximum size
             of trees. Default: 6.
-            
+
         scale_pos_weight(float): hyperparameter of XGBoost, setting the weight
-            of the unbalanced dataset, eg. ratio of lensed to unlensed event 
+            of the unbalanced dataset, eg. ratio of lensed to unlensed event
                 rates. Default: 0.01.
-                
-        include_phenom(bool): include hand dereived features also while 
+
+        include_phenom(bool): include hand dereived features also while
             training. Default: 0.
 
     Returns:
@@ -459,27 +458,27 @@ def predict_xgboost_dense_qts(
     """
     Adds XGBoost Algorithm predictions for the Qtransforms, which takes input
     as the three detector predictions of the trained DenseNet models, and
-    optionally the hand derieved features from Qtransforms, for given set of 
+    optionally the hand derieved features from Qtransforms, for given set of
     event pairs.
 
     Parameters:
-        df(pandas Dataframe): Dataframe containing the img_0, img_1, 
+        df(pandas Dataframe): Dataframe containing the img_0, img_1,
             Lensing(labels), and the three Densenet Predictions for the three
             detectors, eg: 'dense_H1_0' etc.. Optionally should have hand
             derieved features as columns.
-            
-        model_id_dense(int): Identifier for the DenseNet prediction columns 
+
+        model_id_dense(int): Identifier for the DenseNet prediction columns
             in the Dataframe. Default: 0.
-            
+
         model_id_xgb(int): Identifier for adding the XGBoost prediction column
             in the Dataframe. Default: 0.
-            
-        fill_missing(bool): In case of missing Qtransform images, or DenseNet 
-            predictions, return the product of the predictions for the 
+
+        fill_missing(bool): In case of missing Qtransform images, or DenseNet
+            predictions, return the product of the predictions for the
             available detector DenseNet predicitons, other return None.
             Default: 1
-            
-        include_phenom(bool): include hand dereived features also while 
+
+        include_phenom(bool): include hand dereived features also while
             training. Default: 0.
 
     Returns:
@@ -536,7 +535,7 @@ class generate_skymaps_fm:
     Class to generate input feature matrix to the XGBoost using skymaps.
 
     Attributes:
-        df(pandas dataframe): dataframe with img_0, img_1 and Lensing as the 
+        df(pandas dataframe): dataframe with img_0, img_1 and Lensing as the
         columns for loading the Qtransform images using img_0 and img_1 values
         and train using 'Lensing' as labels
     """
@@ -546,8 +545,8 @@ class generate_skymaps_fm:
         Constructor to generate XGBoost with skymaps input feature matrix class.
 
         Parameters:
-            df(pandas dataframe): dataframe with 'img_0', 'img_1' as the 
-                columns for loading the skymaps files(.npz) using img_0 
+            df(pandas dataframe): dataframe with 'img_0', 'img_1' as the
+                columns for loading the skymaps files(.npz) using img_0
                 and img_1 values and the 'Lensing' columns as labels.
         """
         self.df = df
@@ -559,8 +558,8 @@ class generate_skymaps_fm:
         Parameters:
             img_paths(list): list of 'n' paths of the .npz files for the
                 skymaps.
-                
-            THETA_g(2d numpy array of size 400x800): The grid of 'theta' 
+
+            THETA_g(2d numpy array of size 400x800): The grid of 'theta'
                 (declination) over the 2d sky.
 
         Returns:
@@ -569,19 +568,19 @@ class generate_skymaps_fm:
         """
         combine = []
         missing_ids = []
-        for i,img in enumerate(img_paths):
+        for i, img in enumerate(img_paths):
             try:
                 data = np.load(img)["data"]
-            except: 
-                print('%s not found'%img)
-                data=np.zeros([400,800])
+            except BaseException:
+                print('%s not found' % img)
+                data = np.zeros([400, 800])
                 missing_ids.append(i)
             data /= (
                 data * np.sin(THETA_g).T * 2 * np.pi * np.pi / (400 * 800)
             ).sum()
             combine.append(data)
         combine = np.asarray(combine)
-        return combine,missing_ids
+        return combine, missing_ids
 
     def XGBoost_input_matrix(
         self,
@@ -589,23 +588,23 @@ class generate_skymaps_fm:
         data_dir="../../data/bayestar_skymaps/test/",
     ):
         """
-        Compute, return and add the features for skymaps for the given event 
+        Compute, return and add the features for skymaps for the given event
         pairs from the .npz files.
 
         Parameters:
-            data_mode_xgb('bayestar_skymaps' or 'pe_skymaps'): to load and 
+            data_mode_xgb('bayestar_skymaps' or 'pe_skymaps'): to load and
                 construct features for bayestar skymaps(defaut) or PE skymaps.
-                
-            data_dir(str): path of the directory that contains the skymaps 
+
+            data_dir(str): path of the directory that contains the skymaps
                 datafiles(.npz).
 
         Returns:
             2d numpy array(n,4): array with the four features for each pair
                 of events.
-                
-            labels(list): list containing the labels ('Lensing' column of 
+
+            labels(list): list containing the labels ('Lensing' column of
                 Dataframe) for the given pairs.
-                
+
             pandas Dataframe:  Input dataframe with additional four columns as
                 the features constructed from the skymaps.
         """
@@ -622,10 +621,10 @@ class generate_skymaps_fm:
         img_0_paths = add(add(data_dir, df.img_0.values.astype(str)), ".npz")
         img_1_paths = add(add(data_dir, df.img_1.values.astype(str)), ".npz")
 
-        img_0,missing_ids_0 = self.load_data(img_0_paths, THETA_g)
-        img_1,missing_ids_1 = self.load_data(img_1_paths, THETA_g)
+        img_0, missing_ids_0 = self.load_data(img_0_paths, THETA_g)
+        img_1, missing_ids_1 = self.load_data(img_1_paths, THETA_g)
         blu, d2, lsq, d3 = self.calc_features(img_0, img_1)
-        missing_ids=np.union1d(missing_ids_0,missing_ids_1)
+        missing_ids = np.union1d(missing_ids_0, missing_ids_1)
         labels = df.Lensing.values
 
         del img_0, img_1
@@ -651,23 +650,23 @@ class generate_skymaps_fm:
         return Input_combined, labels, df, missing_ids
 
     def calc_features(self, img_0, img_1):
-        """Returns the four features for the given pair(img_0 and img_1) of 
+        """Returns the four features for the given pair(img_0 and img_1) of
             cartesian skymaps.
 
         Parameters:
-            img_0(numpy array(400,800)): normalised skymap of first event in 
+            img_0(numpy array(400,800)): normalised skymap of first event in
                 the pair.
-                
-            img_1(numpy array(400,800)): normalised skymap of second event in 
+
+            img_1(numpy array(400,800)): normalised skymap of second event in
                 the pair.
 
         Returns:
             float: k1 = sum(img_0*img_1)
-            
+
             float: d2 = mean(img_0*img_1)
-            
+
             float: k2 = mean(abs(img_0-img_1))
-            
+
             float: k3 = std(img_0*img1)
 
         """
@@ -680,20 +679,20 @@ class generate_skymaps_fm:
 
     def XGBoost_input_matrix_from_df(self, data_mode_xgb="bayestar_skymaps"):
         """
-        Returns the standardised features and labels for XGBoost sky from the 
+        Returns the standardised features and labels for XGBoost sky from the
             dataframe itself.
 
         Parameters:
-            data_mode_xgb('bayestar_skymaps' or 'pe_skymaps'): to load and 
+            data_mode_xgb('bayestar_skymaps' or 'pe_skymaps'): to load and
                 construct features for bayestar skymaps(defaut) or PE skymaps.
 
         Returns:
-            2d numpy array(n,4): array with the four features for each pair of 
+            2d numpy array(n,4): array with the four features for each pair of
                 events.
-                
-            labels(list): list containing the labels ('Lensing' column of 
+
+            labels(list): list containing the labels ('Lensing' column of
                 Dataframe) for the given pairs.
-                
+
             pandas Dataframe:  Input dataframe.
         """
 
@@ -723,17 +722,17 @@ def XGB_predict(df, model, data_mode_xgb="bayestar_skymaps"):
     XGBoost model and sky features in the dataframe.
 
     Parameters:
-        df(pandas Dataframe): Dataframe containing the img_0, img_1, 
-            Lensing(labels), and the sky features as columns, 
+        df(pandas Dataframe): Dataframe containing the img_0, img_1,
+            Lensing(labels), and the sky features as columns,
             'bayestar_skymaps_blu', 'bayestar_skymaps_d2',
             'bayestar_skymaps_d3', 'bayestar_skymaps_lsq'.
-            
-        data_mode_xgb('bayestar_skymaps' or 'pe_skymaps'): to predict using 
+
+        data_mode_xgb('bayestar_skymaps' or 'pe_skymaps'): to predict using
             the features for bayestar skymaps(defaut) or PE skymaps.
 
     Returns:
-        pandas Dataframe: the input dataframe with additional column eg. 
-        'xgb_pred_bayestar_skymaps' , as the given XGBoost with Skymaps 
+        pandas Dataframe: the input dataframe with additional column eg.
+        'xgb_pred_bayestar_skymaps' , as the given XGBoost with Skymaps
         predictions for the event pairs.
     """
 
@@ -761,23 +760,23 @@ def train_xgboost_sky(
     df_train, n_estimators=110, max_depth=6, scale_pos_weight=0.01
 ):
     """
-    Train XGBoost Algorithm for the Skymaps, which takes input as the sky 
+    Train XGBoost Algorithm for the Skymaps, which takes input as the sky
     features from the input dataframe or .npz files, for given set of event
     pairs.
 
     Parameters:
         df_train(pandas Dataframe): Dataframe containing the img_0, img_1,
-            Lensing(labels), and the sky features as columns, 
+            Lensing(labels), and the sky features as columns,
             'bayestar_skymaps_blu', 'bayestar_skymaps_d2',
             'bayestar_skymaps_d3', 'bayestar_skymaps_lsq'.
-            
-        n_estimators(int): hyperparameter of XGBoost, setting the maximum 
+
+        n_estimators(int): hyperparameter of XGBoost, setting the maximum
             no. of trees. Default: 110.
-            
+
         max_depth(int): hyperparameter of XGBoost, setting the maximum size
             of trees. Default: 6.
-            
-        scale_pos_weight(float): hyperparameter of XGBoost, setting the weight 
+
+        scale_pos_weight(float): hyperparameter of XGBoost, setting the weight
             of the unbalanced dataset, eg. ratio of lensed to unlensed event
             rates. Default: 0.01.
 
@@ -813,22 +812,22 @@ def plot_ROCs(
     ylim=0,
 ):
     """
-    Plots the ROC(reciever operating curves, Efficiency v/s 0 Positive 
+    Plots the ROC(reciever operating curves, Efficiency v/s 0 Positive
     Probability) from the input dataframe, for the given set of columns.
 
     Parameters:
         df(pandas Dataframe): dataframe with the event pairs('img_0','img_1')
             and the ranking statistics as columns, along with the labels in a
             column ('Lensing').
-            
+
         logy(bool): plot the yscale in log, 1/0(default).
-        
+
         cols(list): list of the column names for which ROCs should be plot.
-        
-        labels(list): list of the labels to be put as legend in the plots for 
+
+        labels(list): list of the labels to be put as legend in the plots for
             the corresponding ranking statistic columns. If not given the cols
             will be used in legend.
-            
+
         ylim(float): The lower limit of the y-axis of the plot.
 
     Returns:
@@ -836,7 +835,7 @@ def plot_ROCs(
         dict: each ranking statistic's FPP, efficiency and thresholds.
 
     """
-    if labels == None:
+    if labels is None:
         labels = cols
     colors = ["C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
     rocs = {}
@@ -872,28 +871,28 @@ def plot_ROCs(
 
 def get_fars(df, col, df_ref, col_ref, plot=0, logy=0):
     """
-    Calculates the false positive probability(FPP) for the given pairs of 
+    Calculates the false positive probability(FPP) for the given pairs of
     events and their ranking statistic by using the ranking statistics(or ROC)
     of the background injections as reference. This is done by interpolating
-    the thresholds and FPP curve of the background injections at the values 
+    the thresholds and FPP curve of the background injections at the values
     of the ranking statistics of the pairs in hand.
 
     Parameters:
-        df(pandas Dataframe): Dataframe containing the event pairs 
-            ('img_0','img_1') and their ranking statistic, as columns, 
+        df(pandas Dataframe): Dataframe containing the event pairs
+            ('img_0','img_1') and their ranking statistic, as columns,
             for which the FPPs are to be calculated.
-            
+
         col(str): name of Ranking statistic column for the pairs in hand.
-        
-        df_ref(pandas Dataframe): Dataframe containing the event 
+
+        df_ref(pandas Dataframe): Dataframe containing the event
             pairs('img_0','img_1'), labels('Lensing') and their ranking
             statistic as columns, for the background injections.
-            
+
         col(str): name of Ranking statistic column for the background
             injections, which will be taken as reference.
-            
+
         plot(bool):Return the Threshold v/s FPP plot, default: 0.
-        
+
         logy(float): Plot the yscale in log, default: 0
 
     Returns:

@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pylab as plt
 
 
-def inj_psds_HLV(psd_mode="analytical", sample_rate= 2**12, asd_dir=None):
+def inj_psds_HLV(psd_mode="analytical", sample_rate=2**12, asd_dir=None):
     """
     Generates power spectral densities for the H,L,V detectors.
 
@@ -22,24 +22,24 @@ def inj_psds_HLV(psd_mode="analytical", sample_rate= 2**12, asd_dir=None):
 
     """
     flow = 10.0
-    delta_f = 1.0 / 16        
+    delta_f = 1.0 / 16
     flen = int(sample_rate / (2 * delta_f)) + 1
     if psd_mode == "analytical":
-        
+
         psd_H = pycbc.psd.aLIGOZeroDetHighPower(flen, delta_f, flow)
         psd_L = pycbc.psd.aLIGOZeroDetHighPower(flen, delta_f, flow)
         psd_V = pycbc.psd.analytical.AdvVirgo(flen, delta_f, flow)
 
     elif psd_mode == "load":
-        filename_H = asd_dir+"/H1.txt"
-        filename_L = asd_dir+"/L1.txt"
-        filename_V = asd_dir+"/V1.txt"
+        filename_H = asd_dir + "/H1.txt"
+        filename_L = asd_dir + "/L1.txt"
+        filename_V = asd_dir + "/V1.txt"
         psd_H = pycbc.psd.from_txt(filename_H, flen, delta_f,
-                         flow, is_asd_file=1)
+                                   flow, is_asd_file=1)
         psd_L = pycbc.psd.from_txt(filename_L, flen, delta_f,
-                         flow, is_asd_file=1)
+                                   flow, is_asd_file=1)
         psd_V = pycbc.psd.from_txt(filename_V, flen, delta_f,
-                         flow, is_asd_file=1)
+                                   flow, is_asd_file=1)
     return psd_H, psd_L, psd_V
 
 
@@ -55,13 +55,13 @@ def inject_noise_signal(signal, psd, duration=128, whitened=0, seed=None):
     Parameters:
 
         signal: input pycbc types timeseries.
-        
+
         psd: powers spectral density to generate noise realisation from.
-        
+
         duration(int): duration of the output noise signal, only if
             whitened = 1, default =128s.
         whitened(bool): whiten the signal 1/0(default).
-        
+
         seed(int): random seed for the noise realisation, default: None.
 
     Returns:
@@ -77,7 +77,7 @@ def inject_noise_signal(signal, psd, duration=128, whitened=0, seed=None):
     if whitened == 1:
 
         noise_signal_whitened = (
-            noise_signal.whiten(4,4,low_frequency_cutoff = 10) * 1e-21
+            noise_signal.whiten(4, 4, low_frequency_cutoff=10) * 1e-21
         )
         return noise_signal_whitened.time_slice(
             signal.end_time - 6, signal.end_time + 2
@@ -89,30 +89,34 @@ def inject_noise_signal(signal, psd, duration=128, whitened=0, seed=None):
 
 
 def plot_qt_from_ts(
-    noise_signal, t_gps, qrange, outfname="test", save=1, fhigh=1000,normalised = 1
-):
-
+        noise_signal,
+        t_gps,
+        qrange,
+        outfname="test",
+        save=1,
+        fhigh=1000,
+        normalised=1):
     """
     Plots and saves the nomalized Qtransform of the given signal.
 
     Parameters:
         signal (pycbc Timeseries): input time domain signal of the event.
-        
-        t_gps(int): GPS time of the event in seconds. Qtransform will be 
+
+        t_gps(int): GPS time of the event in seconds. Qtransform will be
             plotted around (t_gps-0.2,t_gps+0.1).
-            
+
         qrange(tuple(qmin,qmax)): input to the qtransform function in pycbc.
-        
+
         outfname(str): output filename, saved as png. Default: 'test'.
-        
+
         save(bool): Save the Qtransform plot, else it will show the figure.
-        
+
         fhigh(int): High frequency cut for the Qtransform plot.
-        
+
         normalised: Divide power in each pixel by maximum power. Default : 1
 
     Returns:
-        float: maximum power in the Qtransform in the window 
+        float: maximum power in the Qtransform in the window
             (t_gps-0.2,t_gps+0.1).
 
     """
@@ -125,20 +129,20 @@ def plot_qt_from_ts(
     )
 
     pylab.figure(figsize=[7, 4])
-    if normalised == 1: 
+    if normalised == 1:
         pylab.pcolormesh(
             times[st:end],
             freqs,
             power[:, st:end] ** 0.5 / np.max(power[:, st:end] ** 0.5),
             cmap="viridis",
-        )  
+        )
     else:
-          pylab.pcolormesh(
+        pylab.pcolormesh(
             times[st:end],
             freqs,
             power[:, st:end] ** 0.5,
             cmap="viridis",
-        )  
+        )
     pylab.xlim(t_gps - 0.2, t_gps + 0.1)
     pylab.yscale("log", basey=2)
     if save == 1:
@@ -152,16 +156,17 @@ def plot_qt_from_ts(
         pylab.show()
     return np.max(power[:, st:end] ** 0.5)
 
-def plot_ts(timseseries_arr,labels_arr, gps, outfname='test',title=''):
-    """ Plot and save the strain timeseries centered around time (gps)"""
-    
-    plt.figure(figsize=(20,5))
-    for i,ts in enumerate(timseseries_arr):
-        plt.plot(ts.sample_times, ts.data, label = labels_arr[i])
 
-    plt.xlim(gps-0.1,gps+0.05)
-    plt.axvline(gps,color='k',ls='dashed',alpha=0.5,label='gps')
+def plot_ts(timseseries_arr, labels_arr, gps, outfname='test', title=''):
+    """ Plot and save the strain timeseries centered around time (gps)"""
+
+    plt.figure(figsize=(20, 5))
+    for i, ts in enumerate(timseseries_arr):
+        plt.plot(ts.sample_times, ts.data, label=labels_arr[i])
+
+    plt.xlim(gps - 0.1, gps + 0.05)
+    plt.axvline(gps, color='k', ls='dashed', alpha=0.5, label='gps')
     plt.legend()
     plt.title(title)
-    plt.savefig(outfname+'.png')
+    plt.savefig(outfname + '.png')
     plt.close()

@@ -18,8 +18,10 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("-ifile", "--ifile", help="Input dat file name")
 parser.add_argument(
-    "-network", "--network", help="Input dat file name: LHV or LH", default="LHV"
-)
+    "-network",
+    "--network",
+    help="Input dat file name: LHV or LH",
+    default="LHV")
 
 args = parser.parse_args()
 ifile = args.ifile
@@ -61,23 +63,20 @@ f_high = 3000.0
 psd_length = int(2000.0 / delta_f)
 psd_dir = "/home/haris.k/runs/lensing/O3_injections/data/O3a_representative_psd"
 h1_asd_data = np.loadtxt(
-    "%s/O3-H1-C01_CLEAN_SUB60HZ-1251752040.0_sensitivity_strain_asd.txt" % psd_dir
-)
+    "%s/O3-H1-C01_CLEAN_SUB60HZ-1251752040.0_sensitivity_strain_asd.txt" %
+    psd_dir)
 l1_asd_data = np.loadtxt(
-    "%s/O3-L1-C01_CLEAN_SUB60HZ-1240573680.0_sensitivity_strain_asd.txt" % psd_dir
-)
+    "%s/O3-L1-C01_CLEAN_SUB60HZ-1240573680.0_sensitivity_strain_asd.txt" %
+    psd_dir)
 v1_asd_data = np.loadtxt("%s/O3-Virgo_sensitivity_asd.txt" % psd_dir)
 
 o3a_psd = {}
-o3a_psd["H1"] = psd.read.from_numpy_arrays(
-    h1_asd_data[:, 0], np.power(h1_asd_data[:, 1], 2), psd_length, delta_f, 18.0
-)
-o3a_psd["L1"] = psd.read.from_numpy_arrays(
-    l1_asd_data[:, 0], np.power(l1_asd_data[:, 1], 2), psd_length, delta_f, 18.0
-)
-o3a_psd["V1"] = psd.read.from_numpy_arrays(
-    v1_asd_data[:, 0], np.power(v1_asd_data[:, 1], 2), psd_length, delta_f, 18.0
-)
+o3a_psd["H1"] = psd.read.from_numpy_arrays(h1_asd_data[:, 0], np.power(
+    h1_asd_data[:, 1], 2), psd_length, delta_f, 18.0)
+o3a_psd["L1"] = psd.read.from_numpy_arrays(l1_asd_data[:, 0], np.power(
+    l1_asd_data[:, 1], 2), psd_length, delta_f, 18.0)
+o3a_psd["V1"] = psd.read.from_numpy_arrays(v1_asd_data[:, 0], np.power(
+    v1_asd_data[:, 1], 2), psd_length, delta_f, 18.0)
 
 net = []
 for det in network:
@@ -146,10 +145,9 @@ for ii in range(len(ldist)):
     snr[ii] = np.sqrt(snrsq)
     with open("%s_%s_withsnr.dat" % (ifile.split(".")[0], network), "a") as file:
         file.write(
-            "%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\n"
-            % (
-                ldist[ii],
-                m1z[ii],
+            "%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\t%.5f\n" %
+            (ldist[ii],
+             m1z[ii],
                 m2z[ii],
                 ra_samples[ii],
                 dec_samples[ii],
@@ -172,5 +170,4 @@ for ii in range(len(ldist)):
                 phase[ii],
                 fref[ii],
                 snr[ii],
-            )
-        )
+             ))

@@ -5,8 +5,10 @@ __author__ = "haris.k"
 import argparse
 
 # Here we shift the injections in days, thus we can use same injection files for various observation windows
-# The input injections are distributed in one day. By shifting them in days won't change time delays, antenna response functions
-import numpy as np, csv
+# The input injections are distributed in one day. By shifting them in
+# days won't change time delays, antenna response functions
+import numpy as np
+import csv
 
 parser = argparse.ArgumentParser(
     "Script to shift the injections in days, thus we can use same injection files for various observation windows. The input injections are distributed in one day. By shifting them in days will not change time delays, antenna response functions."
@@ -39,10 +41,7 @@ out_file = i_file.split(".dat")[0] + "_withshiftedtime.dat"
 with open(out_file, "w") as f:
     writer = csv.writer(f, delimiter="\t")
     writer.writerow(
-        [
-            "ldistance\tm1z\tm2z\tra\tdec\tiota\tpsi\tt0\tt0_shifted\ts1x\ts1y\ts1z\ts2x\ts2y\ts2z\ttheta_jn\tphi_jl\ttilt_1\ttilt_2\tphi_12\ta_1\ta_2\tphase\tf_ref\tsnr"
-        ]
-    )
+        ["ldistance\tm1z\tm2z\tra\tdec\tiota\tpsi\tt0\tt0_shifted\ts1x\ts1y\ts1z\ts2x\ts2y\ts2z\ttheta_jn\tphi_jl\ttilt_1\ttilt_2\tphi_12\ta_1\ta_2\tphase\tf_ref\tsnr"])
     writer.writerows(
         zip(
             data["ldistance"],
