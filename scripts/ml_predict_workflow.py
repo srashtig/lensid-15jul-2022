@@ -1,3 +1,4 @@
+#! /home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/python
 import yaml
 import matplotlib
 import numpy as np
