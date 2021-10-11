@@ -39,6 +39,12 @@ def main():
         '--compare_to_blu',
         help='Compare the results with blu? 1/0',
         default=1)
+    parser.add_argument(
+        '-cv_splits',
+        '--cv_splits',
+        type=int,
+        help='no. of splits in crossvalidation',
+        default=10)
     args = parser.parse_args()
     print('\n Arguments used:- \n')
 
@@ -46,20 +52,30 @@ def main():
         print(arg, ': \t', getattr(args, arg))
 
     tag_sky = args.tag_sky
+    tag_qts = args.tag_qts
+
+    odir = args.odir
+    indir = args.indir
+    compare_to_blu = args.compare_to_blu
+    cv_splits = args.cv_splits
+    
+    _main(odir,indir, tag_sky, tag_qts, cv_splits, compare_to_blu)
+    
+def _main(odir,indir, tag_sky, tag_qts, cv_splits, compare_to_blu):
+    
     if tag_sky == 'None':
         tag_sky = ''
-    tag_qts = args.tag_qts
     if tag_qts == 'None':
         tag_qts = ''
-    odir = args.odir
+        
     df_sky = pd.read_csv(
-        args.indir +
+        indir +
         '/ML_sky' +
         tag_sky +
         '.csv').drop(
         columns=['Unnamed: 0'])
     df_qts = pd.read_csv(
-        args.indir +
+        indir +
         '/ML_qts' +
         tag_qts +
         '.csv').drop(
@@ -72,7 +88,7 @@ def main():
     if not os.path.exists(odir + '/dataframes'):
         os.makedirs(odir + '/dataframes')
 
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
         df_test = pd.merge(df_sky,
                            df_qts,
                            on=['img_0',
@@ -99,7 +115,7 @@ def main():
 
     fig, ax = plt.subplots()
 
-    for i in range(1, 11):
+    for i in range(1, cv_splits+1):
         df_test['densnet_xgbsky_bayestar_mul_' + str(i)] = df_test['xgb_dense_QTS_' + str(
             i)] * df_test['xgb_pred_bayestar_skymaps_' + str(i)]
 
@@ -128,7 +144,7 @@ def main():
     tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
     ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color="grey", alpha=.5)
 
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
         colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
         cols = ['m1, m2, ra, sin_dec']
         labels = [r'$B^L_U$: $m_1,m_2$, $\alpha$, $\delta$']
@@ -171,7 +187,7 @@ def main():
         tag_sky +
         '.csv')
 
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
         ml_stat = 'densnet_xgbsky_bayestar_mul_0'
         blu_stat = 'm1, m2, ra, sin_dec'
         plt.figure(figsize=(20, 5))

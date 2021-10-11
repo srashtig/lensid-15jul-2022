@@ -6,6 +6,9 @@ import os
 import pandas as pd
 import argparse
 import lensid.utils.ml_utils as ml
+import lensid.feature_extraction.lensid_get_features_qts_ml as qts_ml_features
+import lensid.feature_extraction.lensid_get_features_sky_ml as sky_ml_features
+
 import joblib
 import warnings
 warnings.filterwarnings('ignore')
@@ -47,15 +50,15 @@ def main():
 
     if calc_features_sky == 1:
         print('Calculating Sky features...')
-        os.system(
-            'lensid_get_features_sky_ml -infile %s -outfile %s -data_dir %s' %
-            (in_df, (odir + '/dataframes/ML_sky' + tag_sky + '.csv'), data_dir_sky))
+        #    _main(data_dir,start, n,infile,outfile,pe_skymaps)
+
+        sky_ml_features._main(data_dir_sky, 0, 0 , in_df, (odir + '/dataframes/ML_sky' + tag_sky + '.csv'), 0)
 
     if cal_features_qts == 1:
+        #_main(data_dir, n, infile, outfile, start, dense_models_dir, model_id, whitened)
+
         print('Calculating Qtransform features...')
-        os.system(
-            'lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d' %
-            (in_df, (odir + '/dataframes/ML_qts' + tag_qts + '.csv'), data_dir_qts, dense_model_dir, whitened))
+        qts_ml_features._main(data_dir_qts, 0, in_df, (odir + '/dataframes/ML_qts' + tag_qts + '.csv'),0 , dense_model_dir, 0, whitened)
 
     print('Calculating QTs ML predictions...')
     xgb_qts = joblib.load(xgboost_qt)

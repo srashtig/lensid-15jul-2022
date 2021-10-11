@@ -94,16 +94,29 @@ def main():
 
     df_dir_train = args.df_dir_train
     df_dir_test = args.df_dir_test
-    blu_lensed = args.path_to_blu + 'Lensed_PE_blus.csv'
-    blu_unlensed = args.path_to_blu + 'Unlensed_PE_blus.csv'
+
     tag = args.tag
+    
+    train_size_lensed=args.train_size_lensed
+    cv_size_lensed= args.cv_size_lensed
+    scale_pos_weight=args.scale_pos_weight
+    max_depth=args.max_depth
+    n_estimators=args.n_estimators
+    cv_splits = args.cv_splits
+    compare_to_blu = args.compare_to_blu
+    path_to_blu = args.path_to_blu
+    _main(odir,df_dir_train,df_dir_test,tag, train_size_lensed, cv_size_lensed, scale_pos_weight, max_depth, n_estimators, cv_splits, compare_to_blu,path_to_blu)
+    
+def _main(odir,df_dir_train,df_dir_test,tag, train_size_lensed, cv_size_lensed, scale_pos_weight, max_depth, n_estimators, cv_splits, compare_to_blu, path_to_blu):
+    blu_lensed = path_to_blu + 'Lensed_PE_blus.csv'
+    blu_unlensed = path_to_blu + 'Unlensed_PE_blus.csv'
     if tag == 'None':
         tag = ''
     print('\n Training...\n')
     df_lensed_sky = pd.read_csv(
         df_dir_train + 'lensed_sky' + tag + '.csv',
         index_col=[0])[
-        :args.train_size_lensed]
+        :train_size_lensed]
     df_unlensed_sky_half = pd.read_csv(
         df_dir_train +
         'unlensed_half_sky' +
@@ -118,9 +131,9 @@ def main():
 
     xgboost_sky_model = ml.train_xgboost_sky(
         df_train_sky,
-        scale_pos_weight=args.scale_pos_weight,
-        max_depth=args.max_depth,
-        n_estimators=args.n_estimators)
+        scale_pos_weight=scale_pos_weight,
+        max_depth=max_depth,
+        n_estimators=n_estimators)
 
     if not os.path.exists(odir):
         os.makedirs(odir)
@@ -139,7 +152,7 @@ def main():
     df_lensed_sky = pd.read_csv(
         df_dir_train + 'lensed_sky' + tag + '.csv',
         index_col=[0])[
-        args.train_size_lensed:]
+        train_size_lensed:]
     df_unlensed_sky_half = pd.read_csv(
         df_dir_train +
         'unlensed_second_half_sky' +
@@ -174,7 +187,7 @@ def main():
         tag +
         '.csv',
         index_col=[0])[
-        :args.cv_size_lensed]
+        :cv_size_lensed]
     df_unlensed_sky_half = pd.read_csv(
         df_dir_train +
         'unlensed_half_sky' +
@@ -192,7 +205,7 @@ def main():
 
     df_cv_sky = df_cv_sky.sample(frac=1).reset_index(drop=1)
 
-    cv = ml.StratifiedKFold(n_splits=args.cv_splits)
+    cv = ml.StratifiedKFold(n_splits=cv_splits)
 
     plt.rcParams["figure.figsize"] = (10, 10)
 
@@ -210,9 +223,9 @@ def main():
             cv.split(df_cv_sky, df_cv_sky.Lensing.values)):
         xgboost_sky_model = ml.train_xgboost_sky(
             df_cv_sky.iloc[train_index],
-            scale_pos_weight=args.scale_pos_weight,
-            max_depth=args.max_depth,
-            n_estimators=args.n_estimators)
+            scale_pos_weight=scale_pos_weight,
+            max_depth=max_depth,
+            n_estimators=n_estimators)
         joblib_file = odir + "/models/XGBsky_" + str(i + 1) + ".pkl"
         joblib.dump(xgboost_sky_model, joblib_file)
         X = np.c_[df_cv_sky.iloc[test_index][cols]]
@@ -302,7 +315,7 @@ def main():
 
     fig, ax = plt.subplots()
 
-    for i in range(1, 11):
+    for i in range(1, cv_splits +1):
         xgb_sky_cv = joblib.load(odir + "/models/XGBsky_" + str(i) + ".pkl")
         df = ml.XGB_predict(df_test_sky, xgb_sky_cv)
         df_test_sky['xgb_pred_bayestar_skymaps_' +
@@ -334,7 +347,7 @@ def main():
     ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color="grey", alpha=.5)
 
     colors = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
         cols = ['bayestar_skymaps_blu', 'ra, sin_dec']
         labels = ['$B^L_U$ Bayestar skymaps', '$B^L_U$ : RA DEC']
     else:
@@ -368,7 +381,7 @@ def main():
 
     df_test_sky.to_csv(odir + '/dataframes/ML_sky.csv')
 
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
         print('\n Comparing to blu ...\n')
 
         df_test = df_test_sky

@@ -56,16 +56,24 @@ def main():
     print(args.dense_models_dir)
 
     data_dir = args.data_dir
-
-    dense_model_H1 = ml.load_model(args.dense_models_dir + 'H1.h5')
-    dense_model_L1 = ml.load_model(args.dense_models_dir + 'L1.h5')
-    dense_model_V1 = ml.load_model(args.dense_models_dir + 'V1.h5')
-    if args.n == 0:
-        df = pd.read_csv(args.infile, index_col=[0])[args.start:]
+    n = args.n
+    infile = args.infile
+    start = args.start
+    outfile = args.outfile
+    dense_models_dir = args.dense_models_dir
+    model_id =  args.model_id
+    whitened = args.whitened
+    _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened)
+def _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened):
+    dense_model_H1 = ml.load_model(dense_models_dir + 'H1.h5')
+    dense_model_L1 = ml.load_model(dense_models_dir + 'L1.h5')
+    dense_model_V1 = ml.load_model(dense_models_dir + 'V1.h5')
+    if n == 0:
+        df = pd.read_csv(infile, index_col=[0])[start:]
         print(len(df['img_0']), ' event pairs ')
     else:
-        df = pd.read_csv(args.infile, index_col=[0])[
-            args.start:args.start + args.n]
+        df = pd.read_csv(infile, index_col=[0])[
+            start:start + n]
 
     dl = 1000
     l = len(df.img_0.values)
@@ -73,28 +81,27 @@ def main():
     models = [dense_model_H1, dense_model_L1, dense_model_V1]
     for m, det in enumerate(dets):
         model = models[m]
-        df['dense_' + det + '_' + str(args.model_id)] = ''
+        df['dense_' + det + '_' + str(model_id)] = ''
         df['mean_overlap_qts_' + det], df['std_overlap_qts_' +
                                           det], df['lsq_overlap_qts_' + det] = '', '', ''
         for i in range(0, l, dl):
             if i + dl < l:
                 print(i)
                 X, y, missing_ids, df[i:i + dl] = ml.generate_resize_densenet_fm(df[i:i + dl]).DenseNet_input_matrix(
-                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=args.whitened)
+                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=whitened)
                 df['dense_' +
                    det +
                    '_' +
-                   str(args.model_id)].values[i:i +
+                   str(model_id)].values[i:i +
                                               dl] = ml.Dense_predict(model, df[i:i +
                                                                                dl], X, missing_ids)[:, 0]
             else:
                 X, y, missing_ids, df[i:l] = ml.generate_resize_densenet_fm(df[i:l]).DenseNet_input_matrix(
-                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=args.whitened)
-                df['dense_' + det + '_' + str(args.model_id)].values[i:l] = ml.Dense_predict(
+                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=whitened)
+                df['dense_' + det + '_' + str(model_id)].values[i:l] = ml.Dense_predict(
                     model, df[i:l], X, missing_ids)[:, 0]
     print(df.tail())
-    df.to_csv(args.outfile)
-
+    df.to_csv(outfile)
 
 if __name__ == '__main__':
     main()

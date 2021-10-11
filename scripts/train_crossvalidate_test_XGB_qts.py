@@ -94,16 +94,25 @@ def main():
 
     df_dir_train = args.df_dir_train
     df_dir_test = args.df_dir_test
-    blu_lensed = args.path_to_blu + 'Lensed_PE_blus.csv'
-    blu_unlensed = args.path_to_blu + 'Unlensed_PE_blus.csv'
+
     tag = args.tag
+    train_size_lensed = args.train_size_lensed
+    cv_size_lensed = args.cv_size_lensed
+    scale_pos_weight=args.scale_pos_weight
+    max_depth=args.max_depth
+    n_estimators=args.n_estimators
+    cv_splits = args.cv_splits
+    compare_to_blu = args.compare_to_blu
+    path_to_blu = args.path_to_blu
+    
+
+    _main(odir,df_dir_train,df_dir_test,tag, train_size_lensed, cv_size_lensed, scale_pos_weight, max_depth, n_estimators, cv_splits, compare_to_blu, path_to_blu )
+def _main(odir,df_dir_train,df_dir_test,tag, train_size_lensed, cv_size_lensed, scale_pos_weight, max_depth, n_estimators, cv_splits, compare_to_blu, path_to_blu ):
     if tag == 'None':
-        tag = ''
+         tag = ''
     print('\n Training...\n')
-    df_lensed_qts = pd.read_csv(
-        df_dir_train + 'lensed_QTs' + tag + '.csv',
-        index_col=[0])[
-        :args.train_size_lensed]
+    df_lensed_qts = pd.read_csv(df_dir_train + 'lensed_QTs' + tag + '.csv',
+        index_col=[0])[:train_size_lensed]
     df_unlensed_qts_half = pd.read_csv(
         df_dir_train +
         'unlensed_half_QTs' +
@@ -118,10 +127,11 @@ def main():
     xgboost_dense_qts_model = ml.train_xgboost_dense_qts(
         df_train_qts,
         from_df=1,
-        scale_pos_weight=args.scale_pos_weight,
-        max_depth=args.max_depth,
-        n_estimators=args.n_estimators)
-
+        scale_pos_weight=scale_pos_weight,
+        max_depth=max_depth,
+        n_estimators=n_estimators)
+    blu_lensed = path_to_blu + 'Lensed_PE_blus.csv'
+    blu_unlensed = path_to_blu + 'Unlensed_PE_blus.csv'
     if not os.path.exists(odir):
         os.makedirs(odir)
     if not os.path.exists(odir + '/plots'):
@@ -139,7 +149,7 @@ def main():
     df_lensed_qts = pd.read_csv(
         df_dir_train + 'lensed_QTs' + tag + '.csv',
         index_col=[0])[
-        args.train_size_lensed:]
+        train_size_lensed:]
     df_unlensed_qts_half = pd.read_csv(
         df_dir_train +
         'unlensed_second_half_QTs' +
@@ -172,7 +182,7 @@ def main():
         tag +
         '.csv',
         index_col=[0])[
-        :args.cv_size_lensed]
+        :cv_size_lensed]
     df_unlensed_qts_half = pd.read_csv(
         df_dir_train +
         'unlensed_half_QTs' +
@@ -192,7 +202,7 @@ def main():
 
     df_cv_qts.tail()
 
-    cv = ml.StratifiedKFold(n_splits=args.cv_splits)
+    cv = ml.StratifiedKFold(n_splits=cv_splits)
 
     xgboost_dense_qts_models = []
     plt.rcParams["figure.figsize"] = (10, 10)
@@ -208,9 +218,9 @@ def main():
         xgboost_dense_qts_model = ml.train_xgboost_dense_qts(
             df_cv_qts.iloc[train_index],
             from_df=1,
-            n_estimators=args.n_estimators,
-            max_depth=args.max_depth,
-            scale_pos_weight=args.scale_pos_weight)
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            scale_pos_weight=scale_pos_weight)
         joblib_file = odir + "/models/XGBQT_" + str(i + 1) + tag + ".pkl"
         joblib.dump(xgboost_dense_qts_model, joblib_file)
         X = np.c_[df_cv_qts.iloc[test_index][cols]]
@@ -277,7 +287,7 @@ def main():
         '.csv',
         index_col=[0])
 
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
         df_test_blu_lensed = pd.read_csv(blu_lensed, index_col=[0])
         df_test_blu_unlensed = pd.read_csv(blu_unlensed, index_col=[0])
         cols = ['m1, m2, ra, sin_dec, a1, a2, costilt1, costilt2, costheta_jn',
@@ -322,7 +332,7 @@ def main():
     fig, ax = plt.subplots()
     cols = ['dense_H1_0', 'dense_L1_0', 'dense_V1_0']
 
-    for i in range(1, 11):
+    for i in range(1, cv_splits +1):
         xgb_qt_cv = joblib.load(
             odir + "/models/XGBQT_" + str(i) + tag + ".pkl")
         df = ml.predict_xgboost_dense_qts(df_test_qts, xgb_qt_cv)
@@ -362,7 +372,7 @@ def main():
 
     print('\n Comparing to blu...\n')
 
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
         cols = ['dense_H1_0', 'dense_L1_0', 'dense_V1_0', 'm1, m2']
 
         labels = ['ML H1 QTs', 'ML L1 QTs', 'ML V1 QTs', '$B^L_U:$ $m_1 m_2$']
@@ -399,7 +409,7 @@ def main():
     plt.show()
     df_test_qts.to_csv(odir + '/dataframes/ML_qts' + tag + '.csv')
 
-    if args.compare_to_blu == 1:
+    if compare_to_blu == 1:
 
         df_test = df_test_qts
         ml_stat = 'xgb_dense_QTS_0'
@@ -570,7 +580,5 @@ def main():
             '.png')
         plt.show()
         df_test_qts.to_csv(odir + '/dataframes/ML_qts' + tag + '.csv')
-
-
 if __name__ == "__main__":
     main()

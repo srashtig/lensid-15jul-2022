@@ -42,41 +42,17 @@ def main():
 
     dagman = Dagman(name='features_extraction_dagman',
                     submit=submit)
-    '''
 
-    if calc_features_sky ==1:
-        print('Calculating Sky features...')
+    if (calc_features_sky ==1) and (train_features_extract ==1):
+        print('Calculating training set sky features... with following arguments')
         for df in train_dfs_dict.keys() :
             print('train ', df)
-            arguments = '-infile %s -outfile %s -data_dir %s  -n %d >%s.out &'%(df_dir_train+df+'.csv',(base_out_dir+df_dir_train_features_out+df+'_sky'+tag_sky_out+'.csv'),data_dir_sky_train, train_dfs_dict[df],base_out_dir+'/train_'+df+'_sky'+tag_sky_out)
-            print(arguments)
-            job_date = Job(name='sky_train',
-               executable='lensid_get_features_sky_ml',
-               submit=submit,
-               error=error,
-               output=output,
-               log=log,
-               dag=dagman)
+            arguments = '-infile %s -outfile %s -data_dir %s  -n %d '%(df_dir_train + df+'.csv',(base_out_dir+ df_dir_train_features_out+ df+'_sky'+ tag_sky_out+'.csv'),data_dir_sky_train, train_dfs_dict[df])
 
-            #os.system('nohup lensid_get_features_sky_ml )
-
-        for df in test_dfs_dict.keys() :
-            print('test ', df)
-            os.system('nohup lensid_get_features_sky_ml -infile %s -outfile %s -data_dir %s -n %d >%s.out &'%(df_dir_test+df+'.csv',(base_out_dir+df_dir_test_features_out+df+'_sky'+tag_sky_out+'.csv'),data_dir_sky_test ,test_dfs_dict[df],base_out_dir+'/test_'+df+'_sky'+tag_sky_out))
-'''
-    exec_file = '/home/srashti.goyal/lensid/package/lensid/feature_extraction/lensid_get_features_qts_ml.py'
-    exec_file_1 = '/home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/lensid_get_features_qts_ml'
-    execu = 'lensid_get_features_qts_ml'
-    if cal_features_qts == 1:
-        print('Calculating Qtransform features...')
-        for df in train_dfs_dict.keys():
-            print('train ', df)
-            arguments = '--infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d' % (df_dir_train + df + '.csv', (
-                base_out_dir + df_dir_train_features_out + df + '_qts' + tag_qts_out + '.csv'), data_dir_qts_train, dense_model_dir_in, whitened, train_dfs_dict[df])
             print(arguments)
             job = Job(
-                name='qts_features_train_' + df,
-                executable=exec_file_1,
+                name='sky_features_train_' + df,
+                executable=exec_file_loc + 'lensid_get_features_sky_ml',
                 submit=submit,
                 error=error,
                 output=output,
@@ -84,15 +60,78 @@ def main():
                 arguments=arguments,
                 universe='vanilla',
                 getenv=True,
-                extra_lines=['accounting_group = ligo.prod.o3.cbc.testgr.tiger'],
+                extra_lines=['accounting_group = ' + accounting_tag],
                 request_memory='2GB')
             dagman.add_job(job)
+   
+    if (calc_features_sky ==1) and (test_features_extract ==1):
+        print('Calculating testing set sky features... with following arguments')
+        for df in test_dfs_dict.keys() :
+            print('test ', df)
+            arguments = '-infile %s -outfile %s -data_dir %s -n %d >%s.out &'%(df_dir_test+ df+ '.csv',(base_out_dir + df_dir_test_features_out+ df+'_sky'+ tag_sky_out+ '.csv'), data_dir_sky_test, test_dfs_dict[df])
+            print(arguments)
+            job = Job(
+                name='sky_features_test_' + df,
+                executable=exec_file_loc + 'lensid_get_features_sky_ml',
+                submit=submit,
+                error=error,
+                output=output,
+                log=log,
+                arguments=arguments,
+                universe='vanilla',
+                getenv=True,
+                extra_lines=['accounting_group = ' + accounting_tag],
+                request_memory='2GB')
+            dagman.add_job(job)
+            
 
+    if (cal_features_qts == 1 and (train_features_extract ==1)):
+        print('Calculating training set Qtransform features... with following arguments:')
+        for df in train_dfs_dict.keys():
+            print('train ', df)
+            arguments = '--infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d' % (df_dir_train + df + '.csv', (
+                base_out_dir + df_dir_train_features_out + df + '_qts' + tag_qts_out + '.csv'), data_dir_qts_train, dense_model_dir_in, whitened, train_dfs_dict[df])
+            print(arguments)
+            job = Job(
+                name='qts_features_train_' + df,
+                executable=exec_file_loc + 'lensid_get_features_qts_ml',
+                submit=submit,
+                error=error,
+                output=output,
+                log=log,
+                arguments=arguments,
+                universe='vanilla',
+                getenv=True,
+                extra_lines=['accounting_group = ' + accounting_tag],
+                request_memory='2GB')
+            dagman.add_job(job)
+            
+    if (cal_features_qts == 1 and (test_features_extract ==1)):
+        print('Calculating testing set Qtransform features... with following arguments:')
         for df in test_dfs_dict.keys():
             print('test ', df)
-        #    os.system('nohup lensid_get_features_qts_ml -infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d >%s.out &'%(df_dir_test+df + '.csv',(base_out_dir+df_dir_test_features_out+df+'_qts'+tag_qts_out+'.csv'),data_dir_qts_test, dense_model_dir_in, whitened, test_dfs_dict[df], base_out_dir+'/test_'+df+'_qts'+tag_qts_out))
-    dagman.build_submit()
-
-
+            arguments = '-infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d '%(df_dir_test+df + '.csv',(base_out_dir+ df_dir_test_features_out+ df+ '_qts'+ tag_qts_out +'.csv'),data_dir_qts_test, dense_model_dir_in, whitened, test_dfs_dict[df])
+            print(arguments)
+            job = Job(
+                name='qts_features_test_' + df,
+                executable=exec_file_loc + 'lensid_get_features_qts_ml',
+                submit=submit,
+                error=error,
+                output=output,
+                log=log,
+                arguments=arguments,
+                universe='vanilla',
+                getenv=True,
+                extra_lines=['accounting_group = ' + accounting_tag],
+                request_memory='2GB')
+            dagman.add_job(job)
+            
+    if submit_dag ==1:       
+        'Dag created submitting the jobs...'
+        dagman.build_submit()
+        
+    else:
+        dagman.build()
+        print('\n \n Dag saved at: %s'%(submit +'/' + dagman.name))
 if __name__ == "__main__":
     main()

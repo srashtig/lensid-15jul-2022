@@ -9,6 +9,7 @@ import argparse
 import lensid.utils.ml_utils as ml
 import joblib
 import warnings
+import train_densenets_qts 
 warnings.filterwarnings('ignore')
 
 
@@ -37,50 +38,14 @@ def main():
         print('\n ##   Training Densenets ...  ## \n')
 
         if train_h1 == 1:
-            os.system(
-                'python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %d -size_lensed %d -size_unlensed %d -lr %f -det H1' %
-                (df_dir_train +
-                 lensed_df,
-                 df_dir_train +
-                 unlensed_df,
-                 base_out_dir +
-                 dense_model_dir_out,
-                 epochs,
-                 data_dir_qts_train,
-                 whitened,
-                 size_lensed,
-                 size_unlensed,
-                 h1_lr))
+            #_main(odir, data_dir, lensed_df, unlensed_df, size_lensed, size_unlensed, det, epochs, lr, whitened)
+            train_densenets_qts._main(base_out_dir + dense_model_dir_out,data_dir_qts_train, df_dir_train + lensed_df, df_dir_train + unlensed_df, size_lensed, size_unlensed, 'H1', epochs, h1_lr, whitened)
+            
         if train_l1 == 1:
-            os.system(
-                'python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %d -size_lensed %d -size_unlensed %d -lr %f -det L1' %
-                (df_dir_train +
-                 lensed_df,
-                 df_dir_train +
-                 unlensed_df,
-                 base_out_dir +
-                 dense_model_dir_out,
-                 epochs,
-                 data_dir_qts_train,
-                 whitened,
-                 size_lensed,
-                 size_unlensed,
-                 l1_lr))
+            train_densenets_qts._main(base_out_dir + dense_model_dir_out,data_dir_qts_train, df_dir_train + lensed_df, df_dir_train + unlensed_df, size_lensed, size_unlensed, 'L1', epochs, l1_lr, whitened)
+            
         if train_v1 == 1:
-            os.system(
-                'python train_densenets_qts.py -lensed_df %s -unlensed_df %s -odir %s -epochs %d  -data_dir %s -whitened %d -size_lensed %d -size_unlensed %d -lr %f -det V1' %
-                (df_dir_train +
-                 lensed_df,
-                 df_dir_train +
-                 unlensed_df,
-                 base_out_dir +
-                 dense_model_dir_out,
-                 epochs,
-                 data_dir_qts_train,
-                 whitened,
-                 size_lensed,
-                 size_unlensed,
-                 v1_lr))
+            train_densenets_qts._main(base_out_dir + dense_model_dir_out,data_dir_qts_train, df_dir_train + lensed_df, df_dir_train + unlensed_df, size_lensed, size_unlensed, 'V1', epochs, v1_lr, whitened)
 
 
 if __name__ == "__main__":

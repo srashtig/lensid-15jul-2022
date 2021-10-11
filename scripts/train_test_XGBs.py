@@ -10,7 +10,7 @@ import lensid.utils.ml_utils as ml
 import joblib
 import warnings
 warnings.filterwarnings('ignore')
-
+import train_crossvalidate_test_XGB_qts , train_crossvalidate_test_XGB_sky, test_combined_ML_results
 
 def main():
     parser = argparse.ArgumentParser(
@@ -44,22 +44,21 @@ def main():
 
     if (train_test_qts == 1):
         print('\n ##   ML QTs ...  ## \n')
-        os.system('python train_crossvalidate_test_XGB_qts.py -df_dir_train %s -df_dir_test %s -odir %s -tag %s -compare_to_blu %d -path_to_blu %s -train_size_lensed %d -cv_size_lensed %d -cv_splits %d -scale_pos_weight %f -max_depth %d -n_estimators %d' %
-                  (df_dir_train_features_in, df_dir_test_features_in, base_out_dir, tag_qts, compare_to_blu, path_to_blu, train_size_lensed_xgbqts, cv_size_lensed_xgbqts, cv_splits_xgbqts, scale_pos_weight_xgbqts, max_depth_xgbqts, n_estimators_xgbqts))
+        #_main(odir,df_dir_train,df_dir_test,tag, train_size_lensed, cv_size_lensed, scale_pos_weight, max_depth, n_estimators, cv_splits, compare_to_blu, path_to_blu )
+        train_crossvalidate_test_XGB_qts._main(base_out_dir,df_dir_train_features_in, df_dir_test_features_in, tag_qts,train_size_lensed_xgbqts, cv_size_lensed_xgbqts, scale_pos_weight_xgbqts, max_depth_xgbqts, n_estimators_xgbqts, cv_splits, compare_to_blu, path_to_blu)
     if (train_test_sky == 1):
         print('\n ##  ML Skymaps ... ## \n')
-        os.system('python train_crossvalidate_test_XGB_sky.py -df_dir_train %s -df_dir_test %s -odir %s -tag %s -compare_to_blu %d -path_to_blu %s -train_size_lensed %d -cv_size_lensed %d -cv_splits %d -scale_pos_weight %f -max_depth %d -n_estimators %d' %
-                  (df_dir_train_features_in, df_dir_test_features_in, base_out_dir, tag_sky, compare_to_blu, path_to_blu, train_size_lensed_xgbsky, cv_size_lensed_xgbsky, cv_splits_xgbsky, scale_pos_weight_xgbsky, max_depth_xgbsky, n_estimators_xgbsky))
-
+        #_main(odir,df_dir_train,df_dir_test,tag, train_size_lensed, cv_size_lensed, scale_pos_weight, max_depth, n_estimators, cv_splits, compare_to_blu, path_to_blu)
+        train_crossvalidate_test_XGB_sky._main(base_out_dir,df_dir_train_features_in, df_dir_test_features_in, tag_sky,train_size_lensed_xgbsky, cv_size_lensed_xgbsky, scale_pos_weight_xgbsky, max_depth_xgbsky, n_estimators_xgbsky, cv_splits, compare_to_blu, path_to_blu)
+                
     if (test_combined_ml == 1):
         if (train_test_qts == 1) and (train_test_sky == 1):
             indir_combined = base_out_dir + '/dataframes'
         else:
             indir_combined = indir_df
         print('\n ## Testing Combined ML ## \n')
-        os.system(
-            'python test_combined_ML_results.py -indir %s -tag_sky %s -tag_qts %s -odir %s -compare_to_blu %d' %
-            (indir_combined, tag_sky, tag_qts, base_out_dir, compare_to_blu))
+        #_main(odir,indir, tag_sky, tag_qts, cv_splits, compare_to_blu)
+        test_combined_ML_results._main(base_out_dir, indir_combined, tag_sky, tag_qts, cv_splits, compare_to_blu)
 
 
 if __name__ == "__main__":

@@ -45,18 +45,25 @@ def main():
         print(arg, ': \t', getattr(args, arg))
 
     data_dir = args.data_dir + '/'
-
-    if args.n == 0:
-        df = pd.read_csv(args.infile, index_col=[0])[args.start:]
+    n = args.n
+    infile = args.infile
+    start = args.start
+    pe_skymaps = args.pe_skymaps
+    outfile = args.outfile
+    _main(data_dir,start, n,infile,outfile,pe_skymaps)
+    
+def _main(data_dir,start, n,infile,outfile,pe_skymaps):
+    if n == 0:
+        df = pd.read_csv(infile, index_col=[0])[start:]
         print(len(df['img_0']), ' event pairs ')
     else:
-        df = pd.read_csv(args.infile, index_col=[0])[
-            args.start:args.start + args.n]
+        df = pd.read_csv(infile, index_col=[0])[
+            start:start + n]
 
     dl = 1000
     l = len(df.img_0.values)
 
-    if args.pe_skymaps == 0:
+    if pe_skymaps == 0:
         data_mode_xgb = 'current'
         df['bayestar_skymaps_blu'] = ''
         df['bayestar_skymaps_d2'] = ''
@@ -80,7 +87,7 @@ def main():
                 df[i:l]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb, data_dir=data_dir)
 
     print(df.tail())
-    df.to_csv(args.outfile)
+    df.to_csv(outfile)
 
 
 if __name__ == '__main__':

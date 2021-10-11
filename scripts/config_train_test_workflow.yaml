@@ -10,7 +10,9 @@ compare_to_blu : 1
 df_dir_train : /home/srashti.goyal/strong-lensing-ml/data/dataframes/train/
 df_dir_test : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test/
 whitened : 0
-
+exec_file_loc : /home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/
+submit_dag : 0
+accounting_tag : ligo.prod.o3.cbc.testgr.tiger
 #[train-densenets]
 epochs : 10
 lensed_df : lensed.csv
@@ -36,6 +38,8 @@ data_dir_sky_train : /home/srashti.goyal/alice_data_lensid/bayestar_skymaps/trai
 data_dir_sky_test : /home/srashti.goyal/alice_data_lensid/bayestar_skymaps/test
 tag_qts_out : '' #_kaggle
 tag_sky_out : ''
+train_features_extract : 1
+test_features_extract : 1
 train_dfs_dict : { lensed : 100 , unlensed_half : 100 , unlensed_second_half : 100}
 #train_dfs_dict : { lensed : -1 , unlensed_half : -1 , unlensed_second_half : -1}
 test_dfs_dict : {lensed : 100 , unlensed : 100}
@@ -47,7 +51,7 @@ df_dir_test_features_in : /home/srashti.goyal/strong-lensing-ml/data/dataframes/
 path_to_blu : /home/srashti.goyal/strong-lensing-ml/data/dataframes/haris_et_al/
 train_size_lensed_xgbqts : 2400
 cv_size_lensed_xgbqts : 2400
-cv_splits_xgbqts : 10
+cv_splits : 10
 scale_pos_weight_xgbqts : 0.01
 max_depth_xgbqts : 6
 n_estimators_xgbqts : 135
@@ -56,7 +60,6 @@ tag_qts_in : _kaggle
 #[train-test-cv-sky]
 train_size_lensed_xgbsky : 2400
 cv_size_lensed_xgbsky : 2400
-cv_splits_xgbsky : 10
 scale_pos_weight_xgbsky : 0.01
 max_depth_xgbsky : 6
 n_estimators_xgbsky : 110
@@ -65,4 +68,3 @@ tag_sky_in : ''
 #[test-ml-combined]
 indir_df : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test 
 
-#python train_densenets_QTs.py -lensed_df ~/strong-lensing-ml/data/dataframes/train/lensed.csv -unlensed_df ~/strong-lensing-ml/data/dataframes/train/unlensed_half.csv -odir dense_out/cit/ -epochs 10 -data_dir ~/alice_data_lensid/qts/train/
