@@ -9,7 +9,7 @@ import argparse
 import lensid.utils.ml_utils as ml
 import joblib
 import warnings
-import train_densenets_qts 
+from lensid.train_test import train_densenets_qts 
 warnings.filterwarnings('ignore')
 
 

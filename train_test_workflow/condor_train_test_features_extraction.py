@@ -9,7 +9,6 @@ import matplotlib
 import yaml
 from pycondor import Dagman, Job
 
-
 def main():
     parser = argparse.ArgumentParser(
         description='This is stand alone code for training, testing with cross validation and optionally compare to blu the machine learning models for the lensing identification, given the features extracted out of QTs and skymaps of simulated lensed and unlensed event pairs.')

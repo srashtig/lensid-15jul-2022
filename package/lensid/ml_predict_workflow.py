@@ -1,4 +1,3 @@
-#! /home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/python
 import yaml
 import matplotlib
 import numpy as np
@@ -28,7 +27,7 @@ def main():
         '-config',
         '--config',
         help='input CONFIG.yaml file',
-        default='config_O3_events.yaml')
+        required=True)
     args = parser.parse_args()
 
     def set_var(var_name, value):

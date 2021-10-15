@@ -1,10 +1,11 @@
 from pycondor import Job 
 import os
-base_out_dir = '/home/srashti.goyal/lensid_runs/trial'
-job_name = 'o3_condor_trial'
-executable = 'ml_predict_workflow.py'
-arguments = None
+base_out_dir = '/home/srashti.goyal/lensid_runs/dense_models_trained'
+job_name = 'train_densenets'
+executable = 'train_test_workflow/train_three_densenets.py'
+arguments = '-config train_test_workflow/config_train_test_workflow.yaml'
 submit_job = 1
+
 exec_file_loc = '/home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/'
 accounting_tag = 'ligo.prod.o3.cbc.testgr.tiger'
 error = os.path.abspath(base_out_dir + '/condor/error')

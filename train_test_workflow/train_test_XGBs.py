@@ -10,7 +10,7 @@ import lensid.utils.ml_utils as ml
 import joblib
 import warnings
 warnings.filterwarnings('ignore')
-import train_crossvalidate_test_XGB_qts , train_crossvalidate_test_XGB_sky, test_combined_ML_results
+from lensid.train_test import train_crossvalidate_test_XGB_qts , train_crossvalidate_test_XGB_sky, test_combined_ML_results
 
 def main():
     parser = argparse.ArgumentParser(

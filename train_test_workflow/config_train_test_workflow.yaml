@@ -1,5 +1,5 @@
 #[DEFAULT]
-base_out_dir : /home/srashti.goyal/lensid_runs
+base_out_dir : /home/srashti.goyal/lensid_runs/ML1p0
 train_densenets : 1
 calc_features_sky : 0
 cal_features_qts : 1

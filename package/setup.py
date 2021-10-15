@@ -11,7 +11,8 @@ setup(
         "lensid",
         "lensid.utils",
         "lensid.injections",
-        "lensid.feature_extraction"],
+        "lensid.feature_extraction",
+        "lensid.train_test"],
     include_package_data=True,
     entry_points={
         'console_scripts': [
@@ -24,7 +25,8 @@ setup(
             'lensid_create_qts_unlensed_injs=lensid.injections.lensid_create_qts_unlensed_injs:main',
             'lensid_sky_injs_cart=lensid.injections.lensid_sky_injs_cart:main',
             'lensid_get_features_qts_ml=lensid.feature_extraction.lensid_get_features_qts_ml:main',
-            'lensid_get_features_sky_ml=lensid.feature_extraction.lensid_get_features_sky_ml:main']},
+            'lensid_get_features_sky_ml=lensid.feature_extraction.lensid_get_features_sky_ml:main',
+            'lensid_make_predictions=lensid.ml_predict_workflow:main']},
     scripts=[
         "scripts/lensid_create_bayestar_sky_lensed_injs.sh",
         "scripts/lensid_create_bayestar_sky_unlensed_injs.sh"])
