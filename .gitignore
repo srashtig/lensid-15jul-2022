@@ -5,6 +5,7 @@ data/O3a_events/**/
 data/PE_skymaps/**
 notebooks/**/*.h5
 notebooks/**/*.pkl
+development/**/*.h5
 **/out/**
 **/dense_out/**
 **/.ipynb_checkpoints/**
