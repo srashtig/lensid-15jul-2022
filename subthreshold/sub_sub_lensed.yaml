@@ -1,0 +1,35 @@
+base_out_dir : /home/srashti.goyal/lensid_runs/subthreshold/ML_1p0_AnalyticalPsd_sub_sub
+exec_file_loc : /home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/
+submit_dag : 0
+accounting_tag : ligo.prod.o3.cbc.testgr.tiger
+data_gen_dfs : 1
+data_gen_sky : 0
+data_gen_qts : 0
+data_gen_train : 0
+data_gen_test : 0
+data_gen_lensed : 1
+data_gen_unlensed : 0
+data_gen_custom : 1
+
+
+# qts
+out_dir_qts : /data/qts
+asd_dir_txt : /home/srashti.goyal/lensid/data/PSDs/O3a_representative_psd
+whitened : 0
+qmode : 1  # (1 -> q : (3,7 m1>60; 4,8 m1<60)  , 2 -> q : (3,30))
+psd_mode : 1  # (1: analytical 2: from asd_dir_txt)
+
+# dataframes
+out_dir_dfs : /data/dataframes
+
+# skymaps
+out_dir_sky : /data/bayestar_skymaps
+#psd_xml : /home/srashti.goyal/lensid/data/PSDs/O3a_representative_psd/O3a_representative.xml
+psd_xml : /home/srashti.goyal/lensid/data/PSDs/analytical_psd.xml
+
+
+# custom
+inj_pars : /home/srashti.goyal/lensid/subthreshold/lensed_data/sub_sub_lensed_refined.npz
+start_idx : 0
+num_injs : 894
+
