@@ -64,7 +64,7 @@ def main():
         outfile2 = odir + '/' + str(fname_img2) + '.npz'
         infile1 = indir + '/lensed/' + str(index) + '/0/0.fits'
         infile2 = indir + '/lensed/' + str(index) + '/1/0.fits'
-        ftc._main(infile1, outfile2, args.force)
+        ftc._main(infile1, outfile1, args.force)
         ftc._main(infile2, outfile2, args.force)
         #os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile1,outfile1))
         #os.system('lensid_fits_to_cart -infile %s -outfile %s'%(infile2,outfile2))

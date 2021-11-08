@@ -39,31 +39,31 @@ for index in $(seq $start 1 $(($start + $n - 1))) #1004
 do
     path= echo ${out}'/'${index}'/'
     FILE=${out}'/'${index}'/'0.fits
-    #if  [ ! -f "$FILE" ] 
-    #then
+    if  [ ! -f "$FILE" ] 
+    then
 
-    lensid_create_unlensed_inj_xmls --index ${index} --odir ${out} \
-    --infile ${infile}
+        lensid_create_unlensed_inj_xmls --index ${index} --odir ${out} \
+        --infile ${infile}
 
-    scp ${psd_file} ${out}'/'psd.xml
+        scp ${psd_file} ${out}'/'psd.xml
 
 
-    bayestar-realize-coincs \
-    -o ${out}'/'${index}'/'coinc.xml \
-    ${out}'/'${index}'/'inj.xml --reference-psd ${out}'/'psd.xml \
-    --detector H1 L1 V1 \
-    --measurement-error gaussian-noise \
-    --net-snr-threshold 2.0 \
-    --min-triggers 1 \
-    --snr-threshold 1 \
-    -P
+        bayestar-realize-coincs \
+        -o ${out}'/'${index}'/'coinc.xml \
+        ${out}'/'${index}'/'inj.xml --reference-psd ${out}'/'psd.xml \
+        --detector H1 L1 V1 \
+        --measurement-error gaussian-noise \
+        --net-snr-threshold 2.0 \
+        --min-triggers 1 \
+        --snr-threshold 1 \
+        -P
 
-    bayestar-localize-coincs ${out}'/'${index}'/'coinc.xml -o ${out}'/'${index}'/'
+        bayestar-localize-coincs ${out}'/'${index}'/'coinc.xml -o ${out}'/'${index}'/'
 
-    ligo-skymap-plot ${out}'/'${index}'/'0.fits -o ${out}'/'${index}'_'skymap.png \
-    --annotate --contour 50 90
+        ligo-skymap-plot ${out}'/'${index}'/'0.fits -o ${out}'/'${index}'_'skymap.png \
+        --annotate --contour 50 90
 
-    #fi
+    fi
     lensid_sky_injs_cart  -index ${index} -lensed n -odir ${odir} -indir ${odir} \
     -infile ${infile}
 

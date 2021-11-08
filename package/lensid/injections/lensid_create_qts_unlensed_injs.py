@@ -104,9 +104,12 @@ def main():
 
     if not os.path.exists(odir):
         os.makedirs(odir)
+    try:
         os.makedirs(odir + '/H1')
         os.makedirs(odir + '/L1')
         os.makedirs(odir + '/V1')
+    except BaseException:
+        print(odir, ' already exists. saving Qtransforms to it.')
 
     pow_H1 = np.zeros(args.n)
     pow_L1 = np.zeros(args.n)
