@@ -1,5 +1,5 @@
 #[DEFAULT]
-base_out_dir : /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd_whitened
+base_out_dir : /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd
 train_densenets : 1
 calc_features_sky : 0
 cal_features_qts : 1
@@ -10,7 +10,7 @@ compare_to_blu : 1
 calc_features_custom : 0
 df_dir_train : /home/srashti.goyal/lensid_runs/ML_2p0_AnalyticalPsd/data/dataframes/train/
 df_dir_test : /home/srashti.goyal/lensid_runs/ML_2p0_AnalyticalPsd/data/dataframes/test/
-whitened : 1
+whitened : 0
 exec_file_loc : /home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/
 submit_dag : 0
 accounting_tag : ligo.prod.o3.cbc.testgr.tiger
@@ -28,7 +28,7 @@ size_lensed : 1400
 size_unlensed : 1400
 include_phenom : 1
 dense_model_dir_out : /saved_models/ #relative to base_out_dir
-data_dir_qts_train : /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd_whitened/data/qts/train/
+data_dir_qts_train : /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd/data/qts/train/
 
 
 #[feature-extraction]
@@ -48,8 +48,8 @@ train_dfs_dict : { lensed : -1 , unlensed_half : -1 , unlensed_second_half : -1}
 test_dfs_dict : {lensed : -1 , unlensed : -1}
     
 #[train-test-cv-qts]
-df_dir_train_features_in : /home/srashti.goyal/strong-lensing-ml/data/dataframes/train/
-df_dir_test_features_in : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test/
+df_dir_train_features_in : /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd/dataframes/train/
+df_dir_test_features_in : /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd/dataframes/test/
 path_to_blu : /home/srashti.goyal/strong-lensing-ml/data/dataframes/haris_et_al/
 train_size_lensed_xgbqts : 2400
 cv_size_lensed_xgbqts : 2400
@@ -57,7 +57,7 @@ cv_splits : 10
 scale_pos_weight_xgbqts : 0.01
 max_depth_xgbqts : 6
 n_estimators_xgbqts : 135
-tag_qts_in : _kaggle
+tag_qts_in : ''#_kaggle
 
 #[train-test-cv-sky]
 train_size_lensed_xgbsky : 2400
@@ -68,5 +68,5 @@ n_estimators_xgbsky : 110
 tag_sky_in : ''
 
 #[test-ml-combined]
-indir_df : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test 
+indir_df : /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd/dataframes/test 
 

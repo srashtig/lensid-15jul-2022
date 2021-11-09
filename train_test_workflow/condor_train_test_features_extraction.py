@@ -90,7 +90,7 @@ def main():
             for df in train_dfs_dict.keys():
                 print('train ', df)
                 arguments = '--infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d' % (df_dir_train + df + '.csv', (
-                    base_out_dir + df_dir_train_features_out + df + '_qts' + tag_qts_out + '.csv'), data_dir_qts_train, dense_model_dir_in, whitened, train_dfs_dict[df])
+                    base_out_dir + df_dir_train_features_out + df + '_QTs' + tag_qts_out + '.csv'), data_dir_qts_train, dense_model_dir_in, whitened, train_dfs_dict[df])
                 print(arguments)
                 job = Job(
                     name='qts_features_train_' + df,
@@ -110,7 +110,7 @@ def main():
             print('Calculating testing set Qtransform features... with following arguments:')
             for df in test_dfs_dict.keys():
                 print('test ', df)
-                arguments = '-infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d '%(df_dir_test+df + '.csv',(base_out_dir+ df_dir_test_features_out+ df+ '_qts'+ tag_qts_out +'.csv'),data_dir_qts_test, dense_model_dir_in, whitened, test_dfs_dict[df])
+                arguments = '-infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d '%(df_dir_test+df + '.csv',(base_out_dir+ df_dir_test_features_out+ df+ '_QTs'+ tag_qts_out +'.csv'),data_dir_qts_test, dense_model_dir_in, whitened, test_dfs_dict[df])
                 print(arguments)
                 job = Job(
                     name='qts_features_test_' + df,
@@ -150,7 +150,7 @@ def main():
     if (cal_features_qts == 1 and (calc_features_custom ==1)):
         print('Calculating custom given set Qtransform features... with following arguments:')
         arguments = '--infile %s -outfile %s -data_dir %s -dense_models_dir %s -whitened %d -n %d' % (in_dir+custom_df + '.csv', (
-                base_out_dir + out_df_dir+ custom_df + '_qts' + tag_custom_qts_out + '.csv'), data_dir_qts_custom, dense_model_dir_in, whitened, num_pairs)
+                base_out_dir + out_df_dir+ custom_df + '_QTs' + tag_custom_qts_out + '.csv'), data_dir_qts_custom, dense_model_dir_in, whitened, num_pairs)
         print(arguments)
         job = Job(
             name='qts_features_custom_' + custom_df,
