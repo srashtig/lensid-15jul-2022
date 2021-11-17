@@ -61,7 +61,7 @@ def lrfn(epoch):
     """Helper function for training densnets, returns the learning rate at
     each epoch."""
     LR_START = 0.00001
-    LR_MAX = 0.00005  # * strategy.num_replicas_in_sync
+    LR_MAX = 0.00005 *8 # * strategy.num_replicas_in_sync
     LR_MIN = 0.00001
     LR_RAMPUP_EPOCHS = 5
     LR_SUSTAIN_EPOCHS = 0

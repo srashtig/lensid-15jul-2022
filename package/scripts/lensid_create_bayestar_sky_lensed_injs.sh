@@ -42,34 +42,34 @@ do
     do
         path= echo ${out}'/'${index}'/'${img}'/'
         FILE=${out}'/'${index}'/'${img}'/'0.fits
-        #if  [ ! -f "$FILE" ] 
-        #then
-        lensid_create_lensed_inj_xmls --index ${index} --img ${img} --odir ${out} \
-        --infile ${infile}
+        if  [ ! -f "$FILE" ] 
+        then
+            lensid_create_lensed_inj_xmls --index ${index} --img ${img} --odir ${out} \
+            --infile ${infile}
 
-        #bayestar-sample-model-psd -o ${out}'/'${index}'/'psd.xml --H1=aLIGOZeroDetHighPower --L1=aLIGOZeroDetHighPower --V1=AdvVirgo
+            #bayestar-sample-model-psd -o ${out}'/'${index}'/'psd.xml --H1=aLIGOZeroDetHighPower --L1=aLIGOZeroDetHighPower --V1=AdvVirgo
 
-        scp ${psdfile} ${out}/'psd.xml'
+            scp ${psdfile} ${out}/'psd.xml'
 
-        bayestar-realize-coincs \
-        -o ${out}'/'${index}'/'${img}'/'coinc.xml \
-        ${out}'/'${index}'/'${img}'/'inj.xml --reference-psd ${out}/'psd.xml' \
-        --detector H1 L1 V1 \
-        --measurement-error gaussian-noise \
-        --net-snr-threshold 2.0 \
-        --min-triggers 1 \
-        --snr-threshold 1 \
-        -P
+            bayestar-realize-coincs \
+            -o ${out}'/'${index}'/'${img}'/'coinc.xml \
+            ${out}'/'${index}'/'${img}'/'inj.xml --reference-psd ${out}/'psd.xml' \
+            --detector H1 L1 V1 \
+            --measurement-error gaussian-noise \
+            --net-snr-threshold 2.0 \
+            --min-triggers 1 \
+            --snr-threshold 1 \
+            -P
 
 
-        # change/check snr thresholds, net-snr-threshold 6.0
-        bayestar-localize-coincs ${out}'/'${index}'/'${img}'/'coinc.xml \
-        -o ${out}'/'${index}'/'${img}'/'
+            # change/check snr thresholds, net-snr-threshold 6.0
+            bayestar-localize-coincs ${out}'/'${index}'/'${img}'/'coinc.xml \
+            -o ${out}'/'${index}'/'${img}'/'
 
-        ligo-skymap-plot ${out}'/'${index}'/'${img}'/'0.fits \
-        -o ${out}'/'${index}'_'${img}'_'skymap.png --annotate --contour 50 90
+            ligo-skymap-plot ${out}'/'${index}'/'${img}'/'0.fits \
+            -o ${out}'/'${index}'_'${img}'_'skymap.png --annotate --contour 50 90
 
-        #fi
+            fi
     done
     lensid_sky_injs_cart  -index ${index} -lensed y -odir ${odir} -indir ${odir} \
     -infile ${infile}

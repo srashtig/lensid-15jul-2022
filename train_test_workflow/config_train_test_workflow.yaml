@@ -7,6 +7,7 @@ train_test_qts : 1
 train_test_sky : 1
 test_combined_ml : 1
 compare_to_blu : 1
+calc_features_custom : 0
 df_dir_train : /home/srashti.goyal/strong-lensing-ml/data/dataframes/train/
 df_dir_test : /home/srashti.goyal/strong-lensing-ml/data/dataframes/test/
 whitened : 0

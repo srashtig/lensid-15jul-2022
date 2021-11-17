@@ -68,7 +68,7 @@ iota = np.arccos(np.random.rand(n))
 pol = np.random.rand(n)*2*np.pi
 tc  =t0 + np.random.rand(n)*24*60.*60.
 
-with open('%s_withsnr.dat'%(ifile.split('.')[0]), "a") as file:
+with open('%s_withsnr.dat'%(ifile.split('.')[0]), "w") as file:
     file.write('z\tldistance\tm1z\tm2z\tra\tdec\tiota\tpol\ttc\ts1x\ts1y\ts1z\ts2x\ts2y\ts2z\tsnr\n')
 
 snr = np.zeros(n)
