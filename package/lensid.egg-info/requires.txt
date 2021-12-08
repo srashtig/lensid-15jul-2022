@@ -1,0 +1,8 @@
+xgboost==1.2.0
+tensorflow<=2.5.0
+scikit-learn
+joblib==1.0.1
+scikit-image
+opencv-python
+jupyterlab
+pycondor
