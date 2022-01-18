@@ -260,7 +260,7 @@ class generate_resize_densenet_fm:
         data_dir="../../data/qts/test/",
         phenom=0,
         whitened=0,
-        data_dir_0=None
+        data_dir_0=None,
         data_dir_1=None
     ):
         """
