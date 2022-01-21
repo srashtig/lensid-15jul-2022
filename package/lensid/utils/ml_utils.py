@@ -461,7 +461,7 @@ def predict_xgboost_dense_qts(
     model_id_dense=0,
     model_id_xgb=0,
     from_df=1,
-    fill_missing=1,
+    fill_missing=0,
     include_phenom=0,
 ):
     """
@@ -647,7 +647,7 @@ class generate_skymaps_fm:
         del img_0, img_1
 
         Input_combined = np.array([blu, d2, lsq, d3]).T
-        Input_combined = my_imputer.fit_transform(Input_combined)
+       # Input_combined = my_imputer.fit_transform(Input_combined)
 
         if (data_mode_xgb == "pe_skymaps") or (data_mode_xgb == "pe"):
             df = df.assign(
@@ -729,7 +729,7 @@ class generate_skymaps_fm:
 
         labels = df.Lensing.values
         Input_combined = np.array([blu, d2, lsq, d3]).T
-        Input_combined = my_imputer.fit_transform(Input_combined)
+       # Input_combined = my_imputer.fit_transform(Input_combined)
         return Input_combined, labels, df
 
 
@@ -763,8 +763,12 @@ def XGB_predict(df, model, data_mode_xgb="bayestar_skymaps"):
         d2 = df["bayestar_skymaps_d2"]
         lsq = df["bayestar_skymaps_lsq"]
         d3 = df["bayestar_skymaps_d3"]
+    
+    missing_out = (blu.isna() | lsq.isna() | d3.isna()).values
     x_sky = np.c_[blu, d2, lsq, d3]
+    
     y_predict = model.predict_proba(x_sky)[:, 1]
+    y_predict[missing_out] = None
     if data_mode_xgb == "pe_skymaps" or (data_mode_xgb == "pe"):
         df_xgb = df.assign(xgb_pred_pe_skymaps=y_predict)
     else:
