@@ -29,28 +29,36 @@ def main():
         help='input CONFIG.yaml file',
         required=True)
     args = parser.parse_args()
-
+      
+    
     def set_var(var_name, value):
         globals()[var_name] = value
-
+        
+    def setvarnone(var):
+        if var not in globals():
+            globals()[var] = None
+            
     stream = open(args.config, 'r')
     dictionary = yaml.load_all(stream)
-    data_dir_sky_0 = None
-    data_dir_sky_1 = None
-    data_dir_qts_0 = None
-    data_dir_qts_1 = None
 
     for doc in dictionary:
         for key, value in doc.items():
             print(key + " : " + str(value))
             set_var(key, value)
-
+    
     if not os.path.exists(odir):
         os.makedirs(odir)
     if not os.path.exists(odir + '/plots'):
         os.makedirs(odir + '/plots')
     if not os.path.exists(odir + '/dataframes'):
         os.makedirs(odir + '/dataframes')
+    
+    setvarnone('data_dir_sky_0')
+    setvarnone('data_dir_sky')
+    setvarnone('data_dir_qts')
+    setvarnone('data_dir_sky_1')
+    setvarnone('data_dir_qts_1')
+    setvarnone('data_dir_qts_0')
 
     if calc_features_sky == 1:
         print('Calculating Sky features...')
