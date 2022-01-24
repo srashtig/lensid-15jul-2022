@@ -62,9 +62,9 @@ tag_qts_in : '_lr_fix'#_kaggle
 #[train-test-cv-sky]
 train_size_lensed_xgbsky : 2400
 cv_size_lensed_xgbsky : 2400
-scale_pos_weight_xgbsky : 0.1 #0.01
-max_depth_xgbsky : 4 #6
-n_estimators_xgbsky : 105 #110
+scale_pos_weight_xgbsky : 0.01 #0.1 #0.01
+max_depth_xgbsky : 6 #4 #6
+n_estimators_xgbsky : 110 #105 #110
 tag_sky_in : ''
 
 #[test-ml-combined]
