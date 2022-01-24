@@ -62,7 +62,7 @@ def main():
     outfile = args.outfile
     data_dir_0 = args.data_dir_0
     data_dir_1 = args.data_dir_1
-    _main(data_dir,start, n,infile,outfile,pe_skymapsdata_dir_0,data_dir_1, data_dir_0,data_dir_1)
+    _main(data_dir,start, n,infile,outfile,pe_skymaps,data_dir_0,data_dir_1)
     
 def _main(data_dir,start, n,infile,outfile,pe_skymaps, data_dir_0=None,data_dir_1=None):
     if n == 0:
