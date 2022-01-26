@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="lensid",
-    version="0.1.0",
+    version="0.1.1",
     install_requires=open('requirements.txt').read(),
     author='Srashti Goyal, Shasvath Kapadia, P. Ajith',
     author_email='srashti.goyal@icts.res.in',

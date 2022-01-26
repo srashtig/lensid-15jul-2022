@@ -1,11 +1,11 @@
 #[DEFAULT]
 base_out_dir : /home/srashti.goyal/lensid_runs/ML_1p0_O3a_RepPSD
-calc_features_sky : 0
-cal_features_qts : 1
+calc_features_sky : 1
+cal_features_qts : 0
 calc_features_custom : 1
-whitened : 1
+whitened : 0
 exec_file_loc : /home/srashti.goyal/.conda/envs/igwn-py37-hanabi/bin/
-submit_dag : 0
+submit_dag : 1
 accounting_tag : ligo.prod.o3.cbc.testgr.tiger
 
 
@@ -14,9 +14,9 @@ in_dir: /home/srashti.goyal/lensid_runs/ML_1p0_O3a_RepPSD/data/dataframes/
 out_df_dir: /data/dataframes/
 custom_df: unlensed
 num_pairs : -1
-dense_model_dir_in: /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd_whitened/saved_models/
+dense_model_dir_in: /home/srashti.goyal/lensid_runs/ML_1p0_AnalyticalPsd/saved_models/lr_fix/
 data_dir_qts_custom: /home/srashti.goyal/lensid_runs/ML_1p0_O3a_RepPSD/data/qts/
 data_dir_sky_custom: /home/srashti.goyal/lensid_runs/ML_1p0_O3a_RepPSD/data/bayestar_skymaps
-tag_custom_qts_out: '_whitened'
-tag_custom_sky_out: ''
+tag_custom_qts_out: '_lr_fix' #'_lr_fix_whitened'
+tag_custom_sky_out: '_re'
 

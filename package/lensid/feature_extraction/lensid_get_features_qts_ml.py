@@ -22,6 +22,16 @@ def main():
         '--data_dir',
         help='QTs images folder path',
         default='train')
+    parser.add_argument(
+        '-data_dir_0',
+        '--data_dir_0',
+        help='QTs images 0 folder path',
+        default=None)
+    parser.add_argument(
+        '-data_dir_1',
+        '--data_dir_1',
+        help='QTs images 1 folder path',
+        default=None)    
 
     parser.add_argument(
         '-start',
@@ -63,8 +73,11 @@ def main():
     dense_models_dir = args.dense_models_dir
     model_id =  args.model_id
     whitened = args.whitened
-    _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened)
-def _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened):
+    data_dir_0 = args.data_dir_0
+    data_dir_1 = args.data_dir_1
+    _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened,data_dir_0,data_dir_1)
+def _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened,data_dir_0=None,data_dir_1=None):
+    
     dense_model_H1 = ml.load_model(dense_models_dir + 'H1.h5')
     dense_model_L1 = ml.load_model(dense_models_dir + 'L1.h5')
     dense_model_V1 = ml.load_model(dense_models_dir + 'V1.h5')
@@ -88,7 +101,7 @@ def _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened)
             if i + dl < l:
                 print(i)
                 X, y, missing_ids, df[i:i + dl] = ml.generate_resize_densenet_fm(df[i:i + dl]).DenseNet_input_matrix(
-                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=whitened)
+                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=whitened, data_dir_0 = data_dir_0, data_dir_1 = data_dir_1 )
                 df['dense_' +
                    det +
                    '_' +
@@ -97,7 +110,7 @@ def _main(data_dir,n,infile,outfile,start, dense_models_dir, model_id, whitened)
                                                                                dl], X, missing_ids)[:, 0]
             else:
                 X, y, missing_ids, df[i:l] = ml.generate_resize_densenet_fm(df[i:l]).DenseNet_input_matrix(
-                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=whitened)
+                    det=det, data_mode_dense="current", data_dir=data_dir, phenom=1, whitened=whitened, data_dir_0 = data_dir_0, data_dir_1 = data_dir_1)
                 df['dense_' + det + '_' + str(model_id)].values[i:l] = ml.Dense_predict(
                     model, df[i:l], X, missing_ids)[:, 0]
     print(df.tail())

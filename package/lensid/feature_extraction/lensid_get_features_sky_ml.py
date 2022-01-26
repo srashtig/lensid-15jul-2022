@@ -22,6 +22,16 @@ def main():
         '--data_dir',
         help='sky .npz files folder path',
         default='train')
+    parser.add_argument(
+        '-data_dir_0',
+        '--data_dir_0',
+        help='sky .npz files folder path of images 0',
+        default=None)
+    parser.add_argument(
+        '-data_dir_1',
+        '--data_dir_1',
+        help='sky .npz files folder path of images 1',
+        default=None) 
 
     parser.add_argument(
         '-start',
@@ -50,9 +60,11 @@ def main():
     start = args.start
     pe_skymaps = args.pe_skymaps
     outfile = args.outfile
-    _main(data_dir,start, n,infile,outfile,pe_skymaps)
+    data_dir_0 = args.data_dir_0
+    data_dir_1 = args.data_dir_1
+    _main(data_dir,start, n,infile,outfile,pe_skymaps,data_dir_0,data_dir_1)
     
-def _main(data_dir,start, n,infile,outfile,pe_skymaps):
+def _main(data_dir,start, n,infile,outfile,pe_skymaps, data_dir_0=None,data_dir_1=None):
     if n == 0:
         df = pd.read_csv(infile, index_col=[0])[start:]
         print(len(df['img_0']), ' event pairs ')
@@ -80,11 +92,11 @@ def _main(data_dir,start, n,infile,outfile,pe_skymaps):
         if i + dl < l:
             print(i)
             features, xgb_sky_labels, df[i:i + dl], missing_ids = ml.generate_skymaps_fm(
-                df[i:i + dl]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb, data_dir=data_dir)
+                df[i:i + dl]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb, data_dir=data_dir,data_dir_0=data_dir_0,data_dir_1=data_dir_1)
 
         else:
             features, xgb_sky_labels, df[i:l], missing_ids = ml.generate_skymaps_fm(
-                df[i:l]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb, data_dir=data_dir)
+                df[i:l]).XGBoost_input_matrix(data_mode_xgb=data_mode_xgb, data_dir=data_dir,data_dir_0=data_dir_0,data_dir_1=data_dir_1)
 
     print(df.tail())
     df.to_csv(outfile)

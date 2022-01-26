@@ -29,10 +29,15 @@ def main():
         help='input CONFIG.yaml file',
         required=True)
     args = parser.parse_args()
-
+      
+    
     def set_var(var_name, value):
         globals()[var_name] = value
-
+        
+    def setvarnone(var):
+        if var not in globals():
+            globals()[var] = None
+            
     stream = open(args.config, 'r')
     dictionary = yaml.load_all(stream)
 
@@ -40,25 +45,32 @@ def main():
         for key, value in doc.items():
             print(key + " : " + str(value))
             set_var(key, value)
-
+    
     if not os.path.exists(odir):
         os.makedirs(odir)
     if not os.path.exists(odir + '/plots'):
         os.makedirs(odir + '/plots')
     if not os.path.exists(odir + '/dataframes'):
         os.makedirs(odir + '/dataframes')
+    
+    setvarnone('data_dir_sky_0')
+    setvarnone('data_dir_sky')
+    setvarnone('data_dir_qts')
+    setvarnone('data_dir_sky_1')
+    setvarnone('data_dir_qts_1')
+    setvarnone('data_dir_qts_0')
 
     if calc_features_sky == 1:
         print('Calculating Sky features...')
         #    _main(data_dir,start, n,infile,outfile,pe_skymaps)
 
-        sky_ml_features._main(data_dir_sky, 0, 0 , in_df, (odir + '/dataframes/ML_sky' + tag_sky + '.csv'), 0)
+        sky_ml_features._main(data_dir_sky, 0, 0 , in_df, (odir + '/dataframes/ML_sky' + tag_sky + '.csv'), 0,data_dir_sky_0,data_dir_sky_1)
 
     if cal_features_qts == 1:
         #_main(data_dir, n, infile, outfile, start, dense_models_dir, model_id, whitened)
 
         print('Calculating Qtransform features...')
-        qts_ml_features._main(data_dir_qts, 0, in_df, (odir + '/dataframes/ML_qts' + tag_qts + '.csv'),0 , dense_model_dir, 0, whitened)
+        qts_ml_features._main(data_dir_qts, 0, in_df, (odir + '/dataframes/ML_qts' + tag_qts + '.csv'),0 , dense_model_dir, 0, whitened,data_dir_qts_0,data_dir_qts_1)
 
     print('Calculating QTs ML predictions...')
     xgb_qts = joblib.load(xgboost_qt)

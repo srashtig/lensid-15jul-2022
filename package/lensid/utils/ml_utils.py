@@ -260,6 +260,8 @@ class generate_resize_densenet_fm:
         data_dir="../../data/qts/test/",
         phenom=0,
         whitened=0,
+        data_dir_0=None,
+        data_dir_1=None
     ):
         """
         Reads and resizes Qtransform images from the storage given the file
@@ -301,15 +303,22 @@ class generate_resize_densenet_fm:
 
         prefix_paths = det + "/"
         suffix_paths = ".png"
+        
+        if data_dir_0 == None:
+            data_dir_0=data_dir
+            
+        if data_dir_1 == None:
+            data_dir_1=data_dir
+            
         if whitened == 1:
             suffix_paths = "-whitened.png"
 
         img_0_paths = add(
-            add(data_dir, add(prefix_paths, df.img_0.values.astype(str))),
+            add(data_dir_0, add(prefix_paths, df.img_0.values.astype(str))),
             suffix_paths,
         )
         img_1_paths = add(
-            add(data_dir, add(prefix_paths, df.img_1.values.astype(str))),
+            add(data_dir_1, add(prefix_paths, df.img_1.values.astype(str))),
             suffix_paths,
         )
 
@@ -452,7 +461,7 @@ def predict_xgboost_dense_qts(
     model_id_dense=0,
     model_id_xgb=0,
     from_df=1,
-    fill_missing=1,
+    fill_missing=0,
     include_phenom=0,
 ):
     """
@@ -586,6 +595,8 @@ class generate_skymaps_fm:
         self,
         data_mode_xgb="bayestar_skymaps",
         data_dir="../../data/bayestar_skymaps/test/",
+        data_dir_0=None,
+        data_dir_1=None
     ):
         """
         Compute, return and add the features for skymaps for the given event
@@ -617,9 +628,15 @@ class generate_skymaps_fm:
             0, 2 * np.pi, img_col
         )
         THETA_g, PHI_g = np.meshgrid(THETA, PHI)
+        
+        if data_dir_0 == None:
+            data_dir_0=data_dir
+            
+        if data_dir_1 == None:
+            data_dir_1=data_dir
 
-        img_0_paths = add(add(data_dir, df.img_0.values.astype(str)), ".npz")
-        img_1_paths = add(add(data_dir, df.img_1.values.astype(str)), ".npz")
+        img_0_paths = add(add(data_dir_0, df.img_0.values.astype(str)), ".npz")
+        img_1_paths = add(add(data_dir_1, df.img_1.values.astype(str)), ".npz")
 
         img_0, missing_ids_0 = self.load_data(img_0_paths, THETA_g)
         img_1, missing_ids_1 = self.load_data(img_1_paths, THETA_g)
@@ -630,7 +647,7 @@ class generate_skymaps_fm:
         del img_0, img_1
 
         Input_combined = np.array([blu, d2, lsq, d3]).T
-        Input_combined = my_imputer.fit_transform(Input_combined)
+       # Input_combined = my_imputer.fit_transform(Input_combined)
 
         if (data_mode_xgb == "pe_skymaps") or (data_mode_xgb == "pe"):
             df = df.assign(
@@ -712,7 +729,7 @@ class generate_skymaps_fm:
 
         labels = df.Lensing.values
         Input_combined = np.array([blu, d2, lsq, d3]).T
-        Input_combined = my_imputer.fit_transform(Input_combined)
+       # Input_combined = my_imputer.fit_transform(Input_combined)
         return Input_combined, labels, df
 
 
@@ -746,8 +763,12 @@ def XGB_predict(df, model, data_mode_xgb="bayestar_skymaps"):
         d2 = df["bayestar_skymaps_d2"]
         lsq = df["bayestar_skymaps_lsq"]
         d3 = df["bayestar_skymaps_d3"]
+    
+    missing_out = (blu.isna() | lsq.isna() | d3.isna()).values
     x_sky = np.c_[blu, d2, lsq, d3]
+    
     y_predict = model.predict_proba(x_sky)[:, 1]
+    y_predict[missing_out] = None
     if data_mode_xgb == "pe_skymaps" or (data_mode_xgb == "pe"):
         df_xgb = df.assign(xgb_pred_pe_skymaps=y_predict)
     else:
