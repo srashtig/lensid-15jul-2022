@@ -17,3 +17,4 @@ development/**/*.h5
 **/*-checkpoint*
 **/data/dataframes/**
 testing_package/**
+new_statistic/df_test_bhattu.csv
