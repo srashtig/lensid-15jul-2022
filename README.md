@@ -8,4 +8,4 @@ Visit **[code review](https://github.com/srashtig/lensid-15jul-2022/wiki/Code-de
 
 If you use the code in this repository kindly [cite](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.104.124057) our methods paper.
 
-This repository was originally developed in the LIGO-Virgo Collaboration gitlab [https://git.ligo.org/srashti.goyal/lensid], and is copied here on July 15, 2022.
+Note: This repository was originally developed in the LIGO-Virgo Collaboration gitlab ([here](https://git.ligo.org/srashti.goyal/lensid)), and is copied  on July 15, 2022.
